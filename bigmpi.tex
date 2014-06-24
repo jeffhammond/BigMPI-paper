@@ -401,34 +401,6 @@ This sample document contains examples of \textbf{.eps}
 and \textbf{.ps} files to be displayable with \LaTeX.  More
 details on each of these is found in the \textit{Author's Guide}.
 
-\begin{figure}
-\centering
-\epsfig{file=fly.eps}
-\caption{A sample black and white graphic (.eps format).}
-\end{figure}
-
-\begin{figure}
-\centering
-\epsfig{file=fly.eps, height=1in, width=1in}
-\caption{A sample black and white graphic (.eps format)
-that has been resized with the \texttt{epsfig} command.}
-\end{figure}
-
-
-As was the case with tables, you may want a figure
-that spans two columns.  To do this, and still to
-ensure proper ``floating'' placement of tables, use the environment
-\textbf{figure*} to enclose the figure and its caption.
-and don't forget to end the environment with
-{figure*}, not {figure}!
-
-\begin{figure*}
-\centering
-\epsfig{file=flies.eps}
-\caption{A sample black and white graphic (.eps format)
-that needs to span two columns of text.}
-\end{figure*}
-
 Note that either {\textbf{.ps}} or {\textbf{.eps}} formats are
 used; use
 the \texttt{{\char'134}epsfig} or \texttt{{\char'134}psfig}
