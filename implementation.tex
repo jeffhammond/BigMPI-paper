@@ -1,0 +1,48 @@
+
+% MPICH dataloop code
+The MPI Forum contented that a "count, type" tuple was sufficient to descirbe
+arbitrarily large types, but the reality of the MPICH code base prior to the
+3.1 release was that the datatype processing code assumed int types throughout
+the code.   For performance concerns, we did not promote counts from int to
+MPI\_Count: the concern was that MPI\_Count might be 128 bits on some
+platforms.  Instead, we used MPI\_Aint, which will be large enough to hold a
+count of bytes for a memory allocation.  The clang compiler warnign flag
+Wshorten-64-to-32 proved invaluable for this task, and has flagged many more
+locatins in the MPICH code that remain in need of examination.
+
+% ROMIO size routines
+
+Once we made it possible for MPICH to describe arbitrarily large datatypes, we
+needed to update the ROMIO layer to understand these new larger datatypes.
+ROMIO \cite{romio} was designed to be a portable implementation of MPI-2's I/O
+chapter.  While in modern practice it is almost always part of an MPI
+implementation, it is possible to build a stand-alone ROMIO library.  Thus,
+ROMIO strives to use only MPI library routines to process datatypes.
+
+For MPI-3, we have the \_x variants of MPI\_Type\_get\_size.  As with the MPICH
+code, we had to audit for instances of storing $count * size$ into an
+integer.
+
+Some regions of ROMIO did not need updating: we know, for example, that the
+two-phase collective buffering optimization will split up even large requests
+into ``cb\_buffer\_size'' chunks.
+
+% UNIX system calls
+
+After updating MPICH and ROMIO to accomdate large data transfers, we are left
+with one last problem: the system call layer.  The write system call has the
+following prototype:
+
+\begin{verbatim}
+ssize_t write(int fd, const void *buf, size_t count);
+\end{verbatim}
+
+where size\_t is supposed to be big enough to hold "the size of an object"
+\cite{posix}.  However, we must remember that the rule for write is that it may
+write "up to count bytes".  In practice, short writes to a file are not seen --
+until the count approaches $2^31$.  On Linux, we observed write returning
+$2^31-4096$ bytes for large transfers, necessetating the introduction of retry
+logic.  On Darwin and BSD, the story is even worse: if $2^31$ bytes are passed
+down to the read or write system call, the call will return an error.  We now
+cap the size of a transfer to INT\_MAX and issue multiple system calls until
+all bytes have been trasfered.
