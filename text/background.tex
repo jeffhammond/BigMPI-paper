@@ -1,1 +1,36 @@
-\secton{Background}
+% !TEX root = ../bigmpi.tex
+
+\section{Background}
+
+Interface to MPI for large messages, i.e. those where the count argument
+exceeds \texttt{INT\_MAX} but is still less than \texttt{SIZE\_MAX}.
+BigMPI is designed for the common case where one has a 64b address
+space and is unable to do MPI communication on more than $2^{31}$ elements
+despite having sufficient memory to allocate such buffers.
+BigMPI does not attempt to support large-counts on systems where
+C \texttt{int} and \texttt{void\*} are both 32b.
+
+Motivation
+
+The MPI standard provides a wide range of communication functions that
+take a C \texttt{int} argument for the element count, thereby limiting this
+value to \texttt{INT\_MAX} or less.
+This means that one cannot send, e.g. 3 billion bytes using the \texttt{MPI\_BYTE} 
+datatype, or a vector of 5 billion integers using the \texttt{MPI\_INT} type, as
+two examples.
+There is a natural workaround using MPI derived datatypes, but this is
+a burden on users who today may not be using derived datatypes.
+
+This project aspires to make it as easy as possible to support arbitrarily
+large counts ($2^{63}$ elements exceeds the local storage capacity of computers
+for the foreseeable future).
+
+This is an example of the code change required to support large counts using
+BigMPI:
+\begin{verbatim}
+#ifdef BIGMPI
+    MPIX_Bcast_x(stuff, large_count /* MPI_Count */, MPI_BYTE, 0, MPI_COMM_WORLD);
+#else // cannot use count>INT_MAX
+    MPI_Bcast(stuff, not_large_count /* int */, MPI_BYTE, 0, MPI_COMM_WORLD);
+#endif
+\end{verbatim}
