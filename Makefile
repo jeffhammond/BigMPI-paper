@@ -1,6 +1,8 @@
 NAME=bigmpi
 
-all:
+all: dorks
+
+rubber:
 	rubber --pdf --force $(NAME);
 
 dorks:

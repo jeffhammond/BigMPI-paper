@@ -1,0 +1,177 @@
+@TechReport{ mpiforum:94,
+  author    = "{MPI Forum}",
+  title     = "{MPI}: {A} Message-Passing Interface Standard",
+  number    = "UT-CS-94-230",
+institution = "University of Tennessee, Knoxville",
+  year      = "1994",
+}
+
+@TechReport{ mpiforum:96,
+  author    = "{MPI Forum}",
+  title     = "{MPI-2}: {E}xtensions to the Message-Passing Interface",
+  institution = "University of Tennessee, Knoxville",
+  year      = "1996",
+}
+
+@misc{ mpiforum:09,
+    author    = "{MPI Forum}",
+    title     = "{MPI}: {A} message-passing interface standard.  {V}ersion 2.2.",
+    month     = sep,
+    year      = 2009
+}
+
+@misc{ mpiforum:12,
+    author    = "{MPI Forum}",
+    title     = "{MPI}: {A} message-passing interface standard.  {V}ersion 3.0.",
+    month     = nov,
+    year      = 2012
+}
+
+@techreport{ vandam:tr:08,
+  title         = {Is {MPI-2} suitable for Quantum Chemistry? Performance of passive target one-sided communications},
+  author        = {H.J.J. van Dam and M. Wang and A.G. Sunderland and I.J. Bush and P.J. Knowles and M.F. Guest},
+  institution   = {UoE HPCX Ltd.},
+  number        = {HPCxTR0807},
+  year          = 2008
+}
+
+@article{ bonachea:ijhpcn:04,
+ author         = {Bonachea, Dan and Duell, Jason},
+ title          = {Problems with using {MPI} 1.1 and 2.0 as compilation targets for parallel language implementations},
+ journal        = {Int. J. High Perform. Comput. Netw.},
+ volume         = {1},
+ issue          = {1-3},
+ month          = {August},
+ year           = {2004},
+ pages          = {91--99},
+ doi            = {10.1504/IJHPCN.2004.007569},
+ publisher      = {Inderscience Publishers},
+ address        = {Inderscience Publishers, Geneva, SWITZERLAND},
+} 
+
+@inproceedings{ tipparaju:09,
+  title = {Investigating High Performance {RMA} Interfaces for the {MPI-3} Standard},
+  author= {Vinod Tipparaju and William Gropp and Hubert Ritzdorf and Rajeev Thakur and Jesper L. Tr\"aff},
+  booktitle = {Proc. 38th Intl. Conf. on Parallel Processing (ICPP)},
+  month = {September},
+  year = {2009}
+}
+
+@article{ latham:07,
+  author = {Latham, Robert and Ross, Robert and Thakur, Rajeev},
+  title = {{Implementing MPI-IO Atomic Mode and Shared File Pointers Using MPI
+  One-Sided Communication}},
+  journal = {International Journal of High Performance Computing Applications},
+  volume = {21},
+  number = {2},
+  pages = {132--143},
+  doi = {10.1177/1094342007077859},
+  year = {2007},
+  abstract = {The ROMIO implementation of the MPI-IO standard provides a
+  portable infrastructure for use on top of a variety of underlying storage
+  targets. These targets vary widely   in their capabilities, and in some cases
+  additional effort is needed within ROMIO to support all MPI-IO semantics. Two
+  aspects of the interface that can be problematic  to implement are MPI-IO
+  atomic mode and the shared file pointer access routines. Atomic mode requires
+  enforcing strict consistency semantics, and   shared file pointer routines
+  require communication and coordination in order to atomically update a shared
+  resource. For some file systems, native locks may be used to implement these
+  features, but not all file systems have lock support. In this work, we
+  describe algorithms for implementing efficient mutex locks using MPI-1 and
+  the one-sided capabilities from MPI-2. We then show how these algorithms may
+  be used   to implement both MPI-IO atomic mode and shared file pointer
+  methods for ROMIO without requiring any features from the underlying file
+  system. We show that these  algorithms can outperform traditional file system
+  lock approaches. Because of the portable nature of these algorithms, they are
+  likely useful in a variety of  situations where distributed locking or
+  coordination is needed in the MPI-2 environment.  },
+  url = {http://hpc.sagepub.com/cgi/content/abstract/21/2/132},
+  pdf = {papers/latham_rmaops.pdf},
+  eprint = {http://hpc.sagepub.com/cgi/reprint/21/2/132.pdf}
+}
+
+@Article( avl:62,
+  Key="Adelson-Velskii et al.",
+  Author="G. M.  {Adelson-Velski\u i} and E. M. Landis",
+  Title="An Algorithm for the Organization of Information",
+  Journal="Soviet Mathmatics",
+  Volume="3",
+  Number="5",
+  Pages="1259--1262",
+  Year="1962",
+  Note="Translated from Russian {\it Doklady, Akademi\u i Nauk SSSR} {\bf 146}:263--266.")
+}
+
+@InProceedings{cui10:earthquake_sim,
+  author =	 {Y. Cui and K. B. Olsen and T. H. Jordan and K. Lee
+                  and J. Zhou and P. Small and D. Roten and G. Ely and
+                  D.K. Panda and A. Chourasia and J. Levesque and
+                  S. M. Day and P. Maechling},
+  title =	 {{Scalable Earthquake Simulation on Petascale
+                  Supercomputers}},
+  booktitle =	 {Proceedings of the IEEE/ACM International Conference
+                  for High Performance Computing, Networking, Storage
+                  and Analysis},
+  year =	 2010,
+  address =	 {New Orleans, LA},
+  month =	 {Nov}
+}
+
+@InProceedings{potluri10:rma_siesmic,
+  author =	 {S. Potluri and P. Lai and K. Tomko and S. Sur and
+                  Y. Cui and M. Tatineni andK. Schulz and W. Barth and
+                  A. Majumdar and D. K. Panda},
+  title =	 {{Quantifying Performance Benefits of Overlap using
+                  MPI-2 in a Seismic Modeling Application}},
+  booktitle =	 {Proceedings of ACM International Conference on
+                  Supercomputing (ICS)},
+  year =	 2010,
+  address =	 {Tsukuba, Japan}
+}
+
+@Article{thacker03:hydra_mpi,
+  author =	 {{Thacker R. J., Pringle, G., Couchman H. M. P and
+                  Booth, S.}},
+  title =	 {HYDRA-MPI: An Adaptive Particle-Particle,
+                  Particle-Mesh code for conducting Cosmological
+                  Simulations on MPP Architectures},
+  journal =	 {High Performance Computing Systems and Applications},
+  year =	 2003
+}
+
+@inproceedings{lai-isc10,
+  author =	 {P. Lai and S. Sur and D. K. Panda},
+  title =	 {{Designing Truly One-Sided MPI-2 RMA Intra-node
+                  Communication on Multi-core Systems}},
+  booktitle =	 {{International Supercomputing Conference (ISC)}},
+  month =	 {June},
+  year =	 2010,
+  location =	 {Hamburg, Germany}
+}
+
+
+@TechReport{Hoefler:2013:MCS:RMA,
+    author         =  {Hoefler, Torsten and Dinan, James and Thakur, Rajeev and Barrett, Brian and Balaji, Pavan and Gropp, William and Underwood, Keith},
+    title          =  {Remote Memory Access Programming in MPI-3},
+    institution    =  {Argonne National Laboratory},
+    type           =  {Preprint},
+    year           =  2013,
+    number         =  {ANL/MCS-P4062-0413-1},
+    url            =  {http://www.mcs.anl.gov/papers/P4062-0413_1.pdf},
+}
+
+@inproceedings{dinan:eurompi:11,
+    author = {Dinan, James and Krishnamoorthy, Sriram and Balaji, Pavan and Hammond, Jeff R. and Krishnan, Manojkumar and Tipparaju, Vinod and Vishnu, Abhinav},
+    title = {Noncollective communicator creation in {MPI}},
+    booktitle = {Proceedings of the 18th European MPI Users' Group conference on Recent advances in the message passing interface},
+    series = {EuroMPI'11},
+    year = {2011},
+    isbn = {978-3-642-24448-3},
+    location = {Santorini, Greece},
+    pages = {282--291},
+    numpages = {10},
+    url = {http://dl.acm.org/citation.cfm?id=2042476.2042508},
+    acmid = {2042508},
+    publisher = {Springer-Verlag},
+    address = {Berlin, Heidelberg},
+}
