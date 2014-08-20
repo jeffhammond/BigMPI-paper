@@ -11,6 +11,41 @@
 %
 \documentclass[conference]{IEEEtran}
 
+% from ARMCI-MPI2 paper
+\usepackage{amssymb, amsmath}
+\usepackage[dvips]{graphicx}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{rotating}
+\usepackage{textcomp}
+\usepackage{ifthen}
+\usepackage{comment}
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{wrapfig}
+\usepackage{cleveref}
+%\usepackage[width=7.25in,height=9.53in]{geometry}
+
+\definecolor{bloodred}{rgb}{0.7,0.0,0.0}
+\newcommand{\todo}[1]{%
+  \noindent{%
+    \color{bloodred}{%
+      \textbf{TODO:} #1%
+    }%
+  }%
+}
+
+\newcommand{\note}[1]{%
+  \noindent{%
+    \color{blue}{%
+      \textbf{NOTE:} #1%
+    }%
+  }%
+}
+
 \begin{document}
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
