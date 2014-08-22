@@ -29,8 +29,8 @@ This is an example of the code change required to support large counts using
 BigMPI:
 \begin{verbatim}
 #ifdef BIGMPI
-    MPIX_Bcast_x(stuff, large_count /* MPI_Count */, MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPIX_Bcast_x(buf, large_count, MPI_BYTE, 0, mycomm);
 #else // cannot use count>INT_MAX
-    MPI_Bcast(stuff, not_large_count /* int */, MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(but, small_count, MPI_BYTE, 0, mycomm);
 #endif
 \end{verbatim}
