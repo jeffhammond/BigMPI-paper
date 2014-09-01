@@ -1,3 +1,28 @@
 % !TEX root = ../bigmpi.tex
 
 \section{Conclusions and Future Work}
+
+\subsection{Suggestions for MPI-4}
+
+% (1) 34+338 (+339?) required for sane reductions.
+Tickets 34~\cite{ticket34} and 338~\cite{ticket338} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/338
+(``'')
+
+Ticket 339~\cite{ticket339} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/339
+(``User-defined op with derived datatypes yields space-inefficient reduce'')
+
+% (2) 423 is sugar but it greatly reduces user pain and is trivial to implement.
+Ticket 423~\cite{ticket423} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/423
+(``add MPI\_Type\_contiguous\_x'')
+
+%430 is required to support nonblocking v-collectives in a straightforward way.
+Ticket 430~\cite{ticket430} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/430
+(``large-count v-collectives'')
+
+%MPICH-style generalized requests required (https://svn.mpi-forum.org/trac/mpi-forum-web/wiki/Proposal should be ticket-ized)
+Ticket 457~\cite{ticket457} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/457
+(``expose progress in generalized requests'')
+
+\subsection{Suggestions for MPI implementers}
+
+\subsection{Suggestions for users}
