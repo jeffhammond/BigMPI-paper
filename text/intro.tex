@@ -2,5 +2,26 @@
 
 \section{Introduction}
 
-MPI~\cite{mpiforum:94, mpiforum:96, mpiforum:09, mpiforum:12}
+The Message Passing Interface~\cite{mpiforum:94, mpiforum:96, mpiforum:09, mpiforum:12} 
+defines a broad set of functionality for writing parallel programs, especially across
+distributed computing systems.
+
+Now more than 20 years old, MPI continues to be widely used and has met the challenges of
+post-petascale computing, including scaling to millions of cores CITE STUFF.
+
+One area where MPI is less extensive than desirable is operations on very large data.
+Specifically, MPI uses the native integer in the C (\texttt{int}) and Fortran (\texttt{INTEGER})
+interfaces to represent the number of data elements to be communicated;
+in some cases, this type is also used to express an offset (more on this later).  
+This paper focuses on the issues with the C interface and we use the
+well-known convention I$n_{I}$L$n_{L}$P$n_{P}$ to refer to the sizes
+of the C types \texttt{int}, \texttt{long}, and \texttt{void*}, respectively.
+For ILP32 systems, the largest buffer one can allocate is $2^{32}$ bytes (4GiB),
+while MPI can handle buffers of up to 2GiB; the factor of two difference is
+almost never a problem since 4GiB of \texttt{int} for example requires only
+a count of only $2^30$.
+A problem emerges in IL32P64 and I32LP64 systems because it is possible to allocate
+more memory in a buffer than can be captured with an integer count and built-in datatype.
+For example, a vector of 3 billion floats requires 12 GB of memory but cannot be 
+communicated using any communication routine using built-in datatypes.
 
