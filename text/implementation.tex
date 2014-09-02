@@ -1,49 +1,67 @@
 % !TEX root = ../bigmpi.tex
 
+\section{MPI Vendors}
 % MPICH dataloop code
-The MPI Forum contented that a "count, type" tuple was sufficient to descirbe
-arbitrarily large types, but the reality of the MPICH code base prior to the
-3.1 release was that the datatype processing code assumed int types throughout
-the code.   For performance concerns, we did not promote counts from int to
-MPI\_Count: the concern was that MPI\_Count might be 128 bits on some
-platforms.  Instead, we used MPI\_Aint, which will be large enough to hold a
-count of bytes for a memory allocation.  The clang compiler warnign flag
-Wshorten-64-to-32 proved invaluable for this task, and has flagged many more
-locatins in the MPICH code that remain in need of examination.
+As mentioned earlier, the MPI Forum contended that a "count, type"
+tuple was sufficient to describe
+arbitrarily large types.  The MPICH code has only recently become
+``large count'' clean.  \todo the OpenMPI code is/is-not clean?  ROMIO, the
+MPI-IO implementation common to both versions and virtually every other MPI
+implementation, also required some work.
+
+\subsection{MPICH Datatloop code}
+The MPICH code base prior to the
+3.1 release contained widespread assumptions that an int-sized type
+would be sufficient to contain both the size of a datatype and also the product
+of count and size.   An obvious first step would be to promote 'int' to 'MPI\_Count'.
+Out of concern for possibly conducting 128-bit math on a 64 bit platform (a
+rather poorly performing situation on the LP64 machines common in 2014),
+we instead used MPI\_Aint.  The MPI\_Aint type, large enough to hold a
+count of bytes for a memory allocation, will be sufficient to describe the file
+and memory use cases we envision.  To find all the locations in 8600 lines of
+code requiring promotion, the clang compiler warning flag
+Wshorten-64-to-32 proved invaluable for this task.  The compiler option has
+flagged many more
+locations in the MPICH code that remain in need of examination.
 
 % ROMIO size routines
+\subsection{ROMIO type processing}
 
 Once we made it possible for MPICH to describe arbitrarily large datatypes, we
 needed to update the ROMIO layer to understand these new larger datatypes.
-ROMIO \cite{romio} was designed to be a portable implementation of MPI-2's I/O
+ROMIO \cite{thakur:mpi-io-implement} was designed to be a portable
+ implementation of MPI-2's I/O
 chapter.  While in modern practice it is almost always part of an MPI
 implementation, it is possible to build a stand-alone ROMIO library.  Thus,
 ROMIO strives to use only MPI library routines to process datatypes.
 
-For MPI-3, we have the \_x variants of MPI\_Type\_get\_size.  As with the MPICH
-code, we had to audit for instances of storing $count * size$ into an
-integer.
+The MPI-3 standard provides the \_x variants of MPI\_Type\_get\_size, but
+ROMIO, like the MPICH dataloop code, used int types for the count.
+  Here again,  we had to audit ROMIO for instances of storing $count * size$
+into an integer.
 
 Some regions of ROMIO did not need updating: we know, for example, that the
 two-phase collective buffering optimization will split up even large requests
 into ``cb\_buffer\_size'' chunks.
 
 % UNIX system calls
+\subsection{UNIX system calls}
 
-After updating MPICH and ROMIO to accomdate large data transfers, we are left
+Finally, after updating MPICH and ROMIO to accommodate large data transfers,
+ we are left
 with one last problem: the system call layer.  The write system call has the
 following prototype:
 
-\begin{verbatim}
+\begin{code}
 ssize_t write(int fd, const void *buf, size_t count);
-\end{verbatim}
+\end{code}
 
 where size\_t is supposed to be big enough to hold "the size of an object"
-\cite{posix}.  However, we must remember that the rule for write is that it may
+\cite{posix-std}.  However, we must remember that the rule for write is that it may
 write "up to count bytes".  In practice, short writes to a file are not seen --
 until the count approaches $2^31$.  On Linux, we observed write returning
-$2^31-4096$ bytes for large transfers, necessetating the introduction of retry
+$2^31-4096$ bytes for large transfers, necessitating the introduction of retry
 logic.  On Darwin and BSD, the story is even worse: if $2^31$ bytes are passed
 down to the read or write system call, the call will return an error.  We now
 cap the size of a transfer to INT\_MAX and issue multiple system calls until
-all bytes have been trasfered.
+all bytes have been transfered.
