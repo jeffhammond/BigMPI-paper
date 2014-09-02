@@ -2,35 +2,97 @@
 
 \section{Background}
 
-Interface to MPI for large messages, i.e. those where the count argument
-exceeds \texttt{INT\_MAX} but is still less than \texttt{SIZE\_MAX}.
-BigMPI is designed for the common case where one has a 64b address
-space and is unable to do MPI communication on more than $2^{31}$ elements
-despite having sufficient memory to allocate such buffers.
-BigMPI does not attempt to support large-counts on systems where
-C \texttt{int} and \texttt{void\*} are both 32b.
+THIS PROBABLY DOES NOT BELONG HERE
 
-Motivation
+Functions that were easy:
 
-The MPI standard provides a wide range of communication functions that
-take a C \texttt{int} argument for the element count, thereby limiting this
-value to \texttt{INT\_MAX} or less.
-This means that one cannot send, e.g. 3 billion bytes using the \texttt{MPI\_BYTE} 
-datatype, or a vector of 5 billion integers using the \texttt{MPI\_INT} type, as
-two examples.
-There is a natural workaround using MPI derived datatypes, but this is
-a burden on users who today may not be using derived datatypes.
+- all variants of send and receive
 
-This project aspires to make it as easy as possible to support arbitrarily
-large counts ($2^{63}$ elements exceeds the local storage capacity of computers
-for the foreseeable future).
+- bcast, gather, scatter, allgather, alltoall (blocking and nonblocking)
 
-This is an example of the code change required to support large counts using
-BigMPI:
+- RMA (put, get, accumulate, get\_accumulate)
+
+Each of these functions follows the pattern shown in 
+
+\begin{figure}
 \begin{verbatim}
-#ifdef BIGMPI
-    MPIX_Bcast_x(buf, large_count, MPI_BYTE, 0, mycomm);
-#else // cannot use count>INT_MAX
-    MPI_Bcast(but, small_count, MPI_BYTE, 0, mycomm);
-#endif
+int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype,
+int dest, int tag, MPI_Comm comm)
+{
+    int rc = MPI_SUCCESS;
+
+    if (likely (count <= bigmpi_int_max )) {
+        rc = MPI_Send(buf, (int)count, datatype, dest, tag, comm);
+    } else {
+        MPI_Datatype newtype;
+        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPI_Type_commit(&newtype);
+        rc = MPI_Send(buf, 1, newtype, dest, tag, comm);
+        MPI_Type_free(&newtype);
+    }
+    return rc;
+}
 \end{verbatim}
+\label{code:mpi_send_x}
+\end{figure}
+
+% Please see src/type_contiguous_x.c in BigMPI.
+
+In the general case, MPI\_Type\_create\_struct is required, although BigMPI tries to factorize the count into C integers so we can use MPI\_Type\_vector.
+
+Ticket 423 would improve user experience because it addresses the common case of large counts of built-ins.
+
+\subsection{Reductions}
+
+Reductions were not easy
+
+User-defined ops required for user-defined types.  This would be fixed by tickets 34+338.
+
+How do I support MPI\_IN\_PLACE inside of my user-defined reduction?
+I want to use MPI\_Reduce\_local?
+
+Blocking reductions can use the cleaver.
+
+\subsection{Vector-argument collectives}
+
+All V-collectives turn into ALLTOALLW because different counts implies different large-count types.
+
+ALLTOALLW displacements given in bytes are C int and therefore it is impossible to offset more than 2GB into the buffer.
+
+NEIGHBOR\_ALLTOALLW to the rescue?!?!
+
+MPI\_Neighbor\_alltoallw displacements are MPI\_Aint not int.  This is good.
+
+Neighborhood collectives require special communicators that must be created for each call (and possibly cached).
+
+Must allocate new argument vectors and, in the case of ?!alltoall?, we wastefully splat the same value in all locations.
+
+% V-collectives using P2P and RMA
+
+One can follow the definition in MPI to implement all of the V-collectives using P2P.
+
+RMA (with win\_fence synchronization) also works for the V-collectives.
+
+Allgatherv using nproc calls to Bcast also works.
+
+Large-count definitely outside of recursive doubling regime so little to optimize...
+
+% V-collectives - nonblocking issues
+
+None of the aforementioned solutions works for nonblocking because:
+
+What request do we return in the case of P2P or RMA?
+
+Cannot free argument vectors until complete.
+
+Any solution involving generalized requests is untenable for users.  BigMPI might use it.
+
+\subsection{Neighborhood collectives}
+
+Scalar collectives are easy.
+
+V-collectives: map to ALLTOALLW
+
+Same problem as before with nonblocking regarding the allocated argument vectors.
+
+If not for MPI\_Aint displacements in ALLTOALLW, we would have to drop into P2P and MPICH generalized requests.

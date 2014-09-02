@@ -9,6 +9,59 @@ distributed computing systems.
 Now more than 20 years old, MPI continues to be widely used and has met the challenges of
 post-petascale computing, including scaling to millions of cores CITE STUFF.
 
+
+
+MPI-3 largely punted on large-count support
+
+A handful of MPI\_Foo\_x routines make rudimentary large-count support possible
+
+Forum asserted that ?just use datatypes? is a sufficient solution for users.
+
+Obviously, no one bothered to verify the aforementioned assertion...
+
+BigMPI provides a high-level library that supports large counts that can be used as 
+drop-in replacement for existing MPI routines and test the Forum?s assertion 
+that datatypes are sufficient for large-count support.
+
+
+
+Interface to MPI for large messages, i.e. those where the count argument
+exceeds \texttt{INT\_MAX} but is still less than \texttt{SIZE\_MAX}.
+BigMPI is designed for the common case where one has a 64b address
+space and is unable to do MPI communication on more than $2^{31}$ elements
+despite having sufficient memory to allocate such buffers.
+BigMPI does not attempt to support large-counts on systems where
+C \texttt{int} and \texttt{void\*} are both 32b.
+
+Motivation
+
+The MPI standard provides a wide range of communication functions that
+take a C \texttt{int} argument for the element count, thereby limiting this
+value to \texttt{INT\_MAX} or less.
+This means that one cannot send, e.g. 3 billion bytes using the \texttt{MPI\_BYTE} 
+datatype, or a vector of 5 billion integers using the \texttt{MPI\_INT} type, as
+two examples.
+There is a natural workaround using MPI derived datatypes, but this is
+a burden on users who today may not be using derived datatypes.
+
+This project aspires to make it as easy as possible to support arbitrarily
+large counts ($2^{63}$ elements exceeds the local storage capacity of computers
+for the foreseeable future).
+
+This is an example of the code change required to support large counts using
+BigMPI:
+\begin{verbatim}
+#ifdef BIGMPI
+    MPIX_Bcast_x(buf, large_count, MPI_BYTE, 0, mycomm);
+#else // cannot use count>INT_MAX
+    MPI_Bcast(but, small_count, MPI_BYTE, 0, mycomm);
+#endif
+\end{verbatim}
+
+
+
+% This text sucks
+
 One area where MPI is less extensive than desirable is operations on very large data.
 Specifically, MPI uses the native integer in the C (\texttt{int}) and Fortran (\texttt{INTEGER})
 interfaces to represent the number of data elements to be communicated;
