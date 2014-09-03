@@ -72,7 +72,7 @@ of the C types \texttt{int}, \texttt{long}, and \texttt{void*}, respectively.
 For ILP32 systems, the largest buffer one can allocate is $2^{32}$ bytes (4GiB),
 while MPI can handle buffers of up to 2GiB; the factor of two difference is
 almost never a problem since 4GiB of \texttt{int} for example requires only
-a count of only $2^30$.
+a count of only $2^{30}$.
 A problem emerges in IL32P64 and I32LP64 systems because it is possible to allocate
 more memory in a buffer than can be captured with an integer count and built-in datatype.
 For example, a vector of 3 billion floats requires 12 GB of memory but cannot be 
