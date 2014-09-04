@@ -12,22 +12,43 @@ MPI standard.
 
 \texttt{MPIX\_Type\_contiguous\_x}
 does the heavy lifting.  It's pretty obvious how it works.
-The datatypes engine will turn this into a contiguous datatype internally 
+A quality datatype engine will turn this into a contiguous datatype internally 
 and thus the underlying communication will be efficient.  
-MPI implementations need to be count-safe for this to work, but they need
+This approach assumes a count-safe MPI implementation, but implementations need
 to be count-safe period if the Forum is serious about datatypes being
 the solution rather than \texttt{MPI\_Count} everywhere.
 
-All of the communication functions follow the same pattern, which is
-clearly seen in PASTE CODE
-%in [MPIX_Send_x](https://github.com/jeffhammond/BigMPI/blob/master/src/sendrecv_x.c).
-I've optimized for the common case when count is smaller than $2^{31}$ 
-with a \texttt{likely\_if} macro to minimize the performance hit of BigMPI
-for this more common use case
-(hopefully so that users don't insert a branch for this themselves)
+All of the communication functions follow the same pattern, demonstrated in
+Figure~\ref{code:sendrecx}.
+\begin{figure}
+\begin{code}
+/* receive */
+MPI_Datatype newtype;
+MPIX_Type_contiguous_x(count, datatype, &newtype);
+MPI_Type_commit(&newtype);
+rc = MPI_Recv(buf, 1, newtype, source, tag, comm, status);
+MPI_Type_free(&newtype);
 
-The most obvious optimization I can see doing is to implement
-\texttt{MPIX\_Type\_contiguous\_x} using internals of the MPI implementation 
+/* send */
+MPI_Datatype newtype;
+MPIX_Type_contiguous_x(count, datatype, &newtype);
+MPI_Type_commit(&newtype);
+rc = MPI_Send(buf, 1, newtype, dest, tag, comm);
+MPI_Type_free(&newtype);
+\end{code}
+\caption{To send or receive a large amount of data, we simply pass a large
+contiguous type to the standard MPI routines.}
+\label{code:sendrecx}
+
+\end{figure}
+
+BigMPI is optimized for the common case when count is smaller than $2^{31}$
+with a \texttt{likely\_if} macro to minimize the performance hit for
+this more common use case.  Our aim is for users to call the BigMPI routines
+directly, instead of inserting a branch for the large-count case themselves.
+
+To optimize further, one could implement
+\texttt{MPIX\_Type\_contiguous\_x} using internals of the MPI implementation
 instead of calling six MPI datatype functions.
 
 \subsection{Limitations}
@@ -39,18 +60,18 @@ want to communicate more than 8 EiB of data in a single message.
 Such computers do not exist nor is it likely that they will exist
 in the foreseeable future.
 
-BigMPI only supports built-in datatypes.  If you are already using
-derived-datatypes, then you should already be able to handle large
-counts without BigMPI.
+BigMPI only supports built-in datatypes.  Code already using
+derived-datatypes should already be able to handle large
+counts without BigMPI \todo{talk about HINDEXED\_X in ROMIO}
 
 Support for \texttt{MPI\_IN\_PLACE} is not implemented in some cases and
 implemented inefficiently in others.
 Using \texttt{MPI\_IN\_PLACE} is discouraged at the present time.
 We hope to support it more effectively in the future.
 
-BigMPI requires C99.  If your compiler does not support C99, get a
-new compiler.
+BigMPI requires C99.  The BigMPI developers do not forsee systems with large
+amount of memory or disk space also offering a compiler without this level of language support.
 
 BigMPI only has C bindings right now.
 Fortran 2003 bindings are planned.
-If C++ bindings are important to you, please create an issue for this.
+Users desiring C++ bindings are encouraged to contact the BigMPI project.
