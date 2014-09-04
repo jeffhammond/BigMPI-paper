@@ -52,18 +52,18 @@ larger data portions per MPI process and second, Big Data applications
 may demand more RAM per core than the traditional 2GB for computer
 simulations.
 
-If the user code manually packs data, either for performance (fixme:
-citation) or encoding reasons (fixme: cite boost mpi), then the MPI
-implementation may be given just an array of \texttt{MPI\_BYTE}, which
-further reduces the maximum message size (e.g. 250 million for
-\texttt{MPI\_DOUBLE}).
+If the user code manually packs data, either for
+performance~\cite{jenkins2012enabling} or encoding
+reasons~\cite{boostmpi}, then the MPI implementation may be given just
+an array of \texttt{MPI\_BYTE}, which further reduces the maximum
+message size (e.g. 250 million for \texttt{MPI\_DOUBLE}).
 
 A natural workaround is to use MPI derived datatypes. While it is
 plausible that application developers will know typical data sizes and
 can thus intercept calls which may exceed the \texttt{INT\_MAX} limit,
-another scenario is harder to solve: problem solving environments such
-as Cactus (fixme: citation) and computational libraries (e.g.
-LibGeoDecomp fixme: citation) operate on data structures with
+another scenario is harder to solve: problem solving
+environments~\cite{cactus:SC01, gromacs} and computational
+libraries~\cite{physis, libgeodecomp} operate on data structures with
 user-defined dimensions. To ensure correctness, developers would need
 to safeguard all communication functions which operate on user data.
 
