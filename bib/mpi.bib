@@ -225,3 +225,115 @@ institution = "University of Tennessee, Knoxville",
   url         = {https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/XYZ},
 }
 
+@InProceedings{thakur:mpi-io-implement,
+  author = {Rajeev Thakur and William Gropp and Ewing Lusk},
+  title = {On Implementing {MPI-IO} Portably and with High Performance},
+  booktitle = {Proceedings of the Sixth Workshop on Input/Output in Parallel
+  and Distributed Systems},
+  year = {1999},
+  month = {May},
+  pages = {23--32},
+  earlier = {thakur:mpi-io-implement-tr},
+  URL = {http://www.mcs.anl.gov/~thakur/papers/mpio-impl.ps},
+  keywords = {parallel I/O, multiprocessor file system interface, pario-bib},
+  abstract = {We discuss the issues involved in implementing MPI-IO portably on
+  multiple machines and file systems and also achieving high performance. One
+  way to implement MPI-IO portably is to implement it on top of the basic Unix
+  I/O functions ({\tt open}, {\tt lseek}, {\tt read}, {\tt write}, and {\tt
+  close}), which are themselves portable. We argue that this approach has
+  limitations in both functionality and performance. We instead advocate an
+  implementation approach that combines a large portion of portable code and a
+  small portion of code that is optimized separately for different machines and
+  file systems. We have used such an approach to develop a high-performance,
+  portable MPI-IO implementation, called ROMIO. \par In addition to basic I/O
+  functionality, we consider the issues of supporting other MPI-IO features,
+  such as 64-bit file sizes, noncontiguous accesses, collective I/O,
+  asynchronous I/O, consistency and atomicity semantics, user-supplied hints,
+  shared file pointers, portable data representation, and file preallocation.
+  We describe how we implemented each of these features on various machines and
+  file systems. The machines we consider are the HP Exemplar, IBM SP, Intel
+  Paragon, NEC SX-4, SGI Origin2000, and networks of workstations; and the file
+  systems we consider are HP HFS, IBM PIOFS, Intel PFS, NEC SFS, SGI XFS, NFS,
+  and any general Unix file system (UFS). \par We also present our thoughts on
+  how a file system can be designed to better support MPI-IO. We provide a list
+  of features desired from a file system that would help in implementing MPI-IO
+  correctly and with high performance.}
+}
+
+@Book{posix-std,
+  author =       "{IEEE}",
+  title =        "{2004 (ISO\slash IEC) [IEEE\slash ANSI Std 1003.1,
+                 2004 Edition] Information Technology --- Portable
+                 Operating System Interface (POSIX\textregistered{}) ---
+                 Part 1: System Application: Program Interface (API) [C
+                 Language]}",
+  publisher =    "IEEE",
+  address =      "New York, NY USA",
+  year =         "2004",
+}
+
+@INPROCEEDINGS{cactus:SC01,
+  ABSTRACT = {},
+  ADDRESS = {Denver, USA},
+  AUTHOR = {G. Allen and T. Dramlitsch and I. Foster and N. Karonis and M. Ripeanu and E. Seidel and B. Toonen},
+  BOOKTITLE = {SC '01: Proceedings of the 2001 ACM/IEEE conference on Supercomputing},
+  KEYWORD = {cactuscode,computerscience,general},
+  TITLE = "{Supporting Efficient Execution in Heterogeneous Distributed Computing Environments with Cactus and Globus}",
+  URL = {http://portal.acm.org/citation.cfm?coll=GUIDE&dl=GUIDE&id=582086},
+  URLPDF = {http://www.cactuscode.org/Articles/Cactus_Allen01e.pre.pdf},
+  YEAR = {2001}
+}
+
+@article{gromacs,
+author = {Hess, Berk and Kutzner, Carsten and van der Spoel, David and Lindahl, Erik},
+title = "{GROMACS 4, Algorithms for Highly Efficient, Load-Balanced, and Scalable Molecular Simulation}",
+journal = {Journal of Chemical Theory and Computation},
+volume = {4},
+number = {3},
+pages = {435-447},
+year = {2008},
+doi = {10.1021/ct700301q},
+
+URL = {http://pubs.acs.org/doi/abs/10.1021/ct700301q},
+eprint = {http://pubs.acs.org/doi/pdf/10.1021/ct700301q}
+}
+
+@inproceedings{libgeodecomp,
+ author = {Schäfer, Andreas and Fey, Dietmar},
+ title = "{LibGeoDecomp: A Grid-Enabled Library for Geometric Decomposition Codes}",
+ booktitle = {Proceedings of the 15th European PVM/MPI Users' Group Meeting on Recent Advances in Parallel Virtual Machine and Message Passing Interface},
+ year = {2008},
+ isbn = {978-3-540-87474-4},
+ pages = {285--294},
+ location = {Dublin, Ireland},
+ publisher = {Springer},
+ address = {Berlin, Heidelberg}
+}
+
+@inproceedings{physis,
+  address = {Seattle, WA},
+  author = {Maruyama, Naoya and Nomura, Tatsuo and Sato, Kento and
+                  Matsuoka, Satoshi},
+  booktitle = {SC '11: Proceedings of the 2011 ACM/IEEE conference on Supercomputing},
+  title = "{Physis: An Implicitly Parallel Programming Model for
+                  Stencil Computations on Large-Scale GPU-Accelerated
+                  Supercomputers}",
+  year = {2011}
+}
+
+@inproceedings{jenkins2012enabling,
+  title={Enabling fast, noncontiguous GPU data movement in hybrid MPI+ GPU environments},
+  author={Jenkins, John and Dinan, James and Balaji, Pavan and Samatova, Nagiza F and Thakur, Rajeev},
+  booktitle={Cluster Computing (CLUSTER), 2012 IEEE International Conference on},
+  pages={468--476},
+  year={2012},
+  organization={IEEE}
+}
+
+@misc{boostmpi,
+  author = "Gregor, Douglas and Troyer, Matthias",
+  title = "{Boost.MPI Library \url{http://www.boost.org}}",
+  year = "2014",
+  url = "http://www.boost.org/doc/libs/1_56_0/doc/html/mpi.html",
+  note = "[accessed 2014-09-04]"
+}
