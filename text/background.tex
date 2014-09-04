@@ -16,16 +16,16 @@ Each of these functions follows the pattern shown in
 
 \begin{figure}
 \begin{code}
-int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype,
-int dest, int tag, MPI_Comm comm)
+int MPIX_Send_x(const void *buf, MPI_Count count,
+                MPI_Datatype dt, int dest,
+                int tag, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
-
-    if (likely (count <= bigmpi_int_max )) {
-        rc = MPI_Send(buf, (int)count, datatype, dest, tag, comm);
+    if (likely (count <= INT_MAX )) {
+        rc = MPI_Send(buf, (int)count, dt, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(count, dt, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Send(buf, 1, newtype, dest, tag, comm);
         MPI_Type_free(&newtype);
