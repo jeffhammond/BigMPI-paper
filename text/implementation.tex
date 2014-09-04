@@ -17,7 +17,7 @@ virtually every other MPI implementation, also required some work.
 The MPICH code base prior to the
 3.1 release contained widespread assumptions that an int-sized type
 would be sufficient to contain both the size of a datatype and also the product
-of count and size.   An obvious first step would be to promote 'int' to 'MPI\_Count'.
+of count and size.   An obvious first step would be to promote `int' to `MPI\_Count'.
 Out of concern for possibly conducting 128-bit math on a 64 bit platform (a
 rather poorly performing situation on the LP64 machines common in 2014),
 we instead used MPI\_Aint.  The MPI\_Aint type, large enough to hold a
@@ -61,7 +61,7 @@ ssize_t write(int fd, const void *buf, size_t count);
 
 where size\_t is supposed to be big enough to hold ``the size of an object''
 \cite{posix-std}.  However, we must remember that the rule for write is that it may
-write "up to count bytes".  In practice, short writes to a file are not seen --
+write ``up to count bytes''.  In practice, short writes to a file are not seen --
 until the count approaches $2^{31}$.  On Linux, we observed write returning
 $2^{31}-4096$ bytes for large transfers, necessitating the introduction of retry
 logic.  On Darwin and BSD, the story is even worse: if $2^{31}$ bytes are passed
