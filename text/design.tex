@@ -19,27 +19,7 @@ to be count-safe period if the Forum is serious about datatypes being
 the solution rather than \texttt{MPI\_Count} everywhere.
 
 All of the communication functions follow the same pattern, demonstrated in
-Figure~\ref{code:sendrecx}.
-\begin{figure}
-\begin{code}
-/* receive */
-MPI_Datatype newtype;
-MPIX_Type_contiguous_x(count, datatype, &newtype);
-MPI_Type_commit(&newtype);
-rc = MPI_Recv(buf, 1, newtype, source, tag, comm, status);
-MPI_Type_free(&newtype);
-
-/* send */
-MPI_Datatype newtype;
-MPIX_Type_contiguous_x(count, datatype, &newtype);
-MPI_Type_commit(&newtype);
-rc = MPI_Send(buf, 1, newtype, dest, tag, comm);
-MPI_Type_free(&newtype);
-\end{code}
-\caption{To send or receive a large amount of data, we simply pass a large
-contiguous type to the standard MPI routines.}
-\label{code:sendrecx}
-
+Figure~\ref{code:mpi_send_x}.
 \end{figure}
 
 BigMPI is optimized for the common case when count is smaller than $2^{31}$
