@@ -1,6 +1,12 @@
 % !TEX root = ../bigmpi.tex
 
 \begin{abstract}
-The abstract goes here.
+	\todo{I don't like this}
+To describe a structured region of memory, the routines in the MPI standard use
+a "count, datatype" pair.  The C specification for this convention uses an
+'int' type, making descriptions of more than 2 GiB of data difficult.  Instead
+of changing the routines, and all consumers of those routines, the forum
+asserts users can build up large datatypes from smaller types.  BigMPI
+demonstrates a way to perform such a construction, reveals shortcomings of the
+MPI standard, and uncovers bugs in MPI implementations. 
 \end{abstract}
-
