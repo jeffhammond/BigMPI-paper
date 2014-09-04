@@ -1,13 +1,17 @@
 % !TEX root = ../bigmpi.tex
 
-\section{MPI Vendors}
+\section{MPI Implementations}
 % MPICH dataloop code
-As mentioned earlier, the MPI Forum contended that a "count, type"
+As mentioned earlier, the MPI Forum contended that a ``count, type''
 tuple was sufficient to describe
 arbitrarily large types.  The MPICH code has only recently become
-``large count'' clean.  \todo the OpenMPI code is/is-not clean?  ROMIO, the
-MPI-IO implementation common to both versions and virtually every other MPI
-implementation, also required some work.
+``large count'' clean.
+
+OpenMPI 1.8.1 passes all of the BigMPI tests associated with
+``make check'' for the default configuration.
+
+ROMIO, the MPI-IO implementation common to both versions and
+virtually every other MPI implementation, also required some work.
 
 \subsection{MPICH Datatloop code}
 The MPICH code base prior to the
@@ -19,8 +23,8 @@ rather poorly performing situation on the LP64 machines common in 2014),
 we instead used MPI\_Aint.  The MPI\_Aint type, large enough to hold a
 count of bytes for a memory allocation, will be sufficient to describe the file
 and memory use cases we envision.  To find all the locations in 8600 lines of
-code requiring promotion, the clang compiler warning flag
-Wshorten-64-to-32 proved invaluable for this task.  The compiler option has
+code requiring promotion, the Clang compiler warning flag
+\texttt{-Wshorten-64-to-32} proved invaluable for this task.  The compiler option has
 flagged many more
 locations in the MPICH code that remain in need of examination.
 
@@ -37,7 +41,7 @@ ROMIO strives to use only MPI library routines to process datatypes.
 
 The MPI-3 standard provides the \_x variants of MPI\_Type\_get\_size, but
 ROMIO, like the MPICH dataloop code, used int types for the count.
-  Here again,  we had to audit ROMIO for instances of storing $count * size$
+Here again,  we had to audit ROMIO for instances of storing $count * size$
 into an integer.
 
 Some regions of ROMIO did not need updating: we know, for example, that the
@@ -48,20 +52,19 @@ into ``cb\_buffer\_size'' chunks.
 \subsection{UNIX system calls}
 
 Finally, after updating MPICH and ROMIO to accommodate large data transfers,
- we are left
-with one last problem: the system call layer.  The write system call has the
-following prototype:
+we are left with one last problem: the system call layer.
+The write system call has the following prototype:
 
 \begin{code}
 ssize_t write(int fd, const void *buf, size_t count);
 \end{code}
 
-where size\_t is supposed to be big enough to hold "the size of an object"
+where size\_t is supposed to be big enough to hold ``the size of an object''
 \cite{posix-std}.  However, we must remember that the rule for write is that it may
 write "up to count bytes".  In practice, short writes to a file are not seen --
-until the count approaches $2^31$.  On Linux, we observed write returning
-$2^31-4096$ bytes for large transfers, necessitating the introduction of retry
-logic.  On Darwin and BSD, the story is even worse: if $2^31$ bytes are passed
+until the count approaches $2^{31}$.  On Linux, we observed write returning
+$2^{31}-4096$ bytes for large transfers, necessitating the introduction of retry
+logic.  On Darwin and BSD, the story is even worse: if $2^{31}$ bytes are passed
 down to the read or write system call, the call will return an error.  We now
 cap the size of a transfer to INT\_MAX and issue multiple system calls until
 all bytes have been transfered.
