@@ -4,15 +4,24 @@
 
 THIS PROBABLY DOES NOT BELONG HERE
 
-Functions that were easy:
+In order to understand the implementation issues associated with
+large-count support in MPI, we prototyped an implementation of
+essentially all of the communication functionality in MPI-3 so as to 
+support large counts.  
+The software implementation is found in the open-source BigMPI
+library and is relatively friendly to users, i.e. it has both a Cmake
+and an Autotools build system and requires a generic programming
+environment composed of a C99 compiler and an implementation
+of MPI-3.
 
-- all variants of send and receive
+The most common functionality in MPI -- including all of the point-to-point,
+which includes both two-sided and one-sided in this context -- were
+trivial w.r.t. large-count support via MPI datatypes.
 
-- bcast, gather, scatter, allgather, alltoall (blocking and nonblocking)
-
-- RMA (put, get, accumulate, get\_accumulate)
-
-Each of these functions follows the pattern shown in 
+All variants of send and receive, blocking and nonblocking variants of
+the homogeneous collectives (bcast, gather, scatter, allgather, alltoall)
+and RMA (put, get, accumulate, get\_accumulate) were implemented
+using the simple shown in Figure~\ref{code:mpi_send_x}.
 
 \begin{figure}
 \begin{code}
@@ -34,9 +43,41 @@ int MPIX_Send_x(const void *buf, MPI_Count count,
 }
 \end{code}
 \label{code:mpi_send_x}
+\caption{The implementation of large-count Send, which serves as a template
+for many other routines in MPI-3.}
 \end{figure}
 
-% Please see src/type_contiguous_x.c in BigMPI.
+\begin{figure}
+\begin{code}
+int MPIX_Type_contiguous_x(MPI_Count count, 
+                           MPI_Datatype oldtype, 
+                           MPI_Datatype * newtype)
+{
+    assert(count<SIZE_MAX); /* has to fit into MPI_Aint */
+    MPI_Count c = count/INT_MAX, r = count%INT_MAX;
+
+    MPI_Datatype chunks, remainder;
+    MPI_Type_vector(c, INT_MAX, INT_MAX, oldtype, &chunks);
+    MPI_Type_contiguous(r, oldtype, &remainder);
+
+    MPI_Aint lb /* unused */, extent;
+    MPI_Type_get_extent(oldtype, &lb, &extent);
+
+    MPI_Aint remdisp          = (MPI_Aint)c*INT_MAX*extent;
+    int blklens[2]            = {1,1};
+    MPI_Aint disps[2]         = {0,remdisp};
+    MPI_Datatype types[2]     = {chunks,remainder};
+    MPI_Type_create_struct(2, blklens, disps, types, newtype);
+
+    MPI_Type_free(&chunks);
+    MPI_Type_free(&remainder);
+
+    return MPI_SUCCESS;
+}
+\end{code}
+\label{code:type_contig_x}
+\caption{Function for construction a large-count contiguous datatype.}
+\end{figure}
 
 In the general case, MPI\_Type\_create\_struct is required, although BigMPI tries to factorize the count into C integers so we can use MPI\_Type\_vector.
 
