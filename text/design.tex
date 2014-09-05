@@ -2,7 +2,7 @@
 
 \section{Design}
 
-The API follows the pattern of \texttt{MPI\_Type\_size(\_x)} in that all BigMPI
+The API follows the pattern of \texttt{MPI\_Type\_size(\_x)}: all BigMPI
 functions are identical to their corresponding MPI ones except that
 they end with \texttt{\_x} to indicate that the count arguments have the type
 \texttt{MPI\_Count} instead of \texttt{int}.
@@ -28,7 +28,9 @@ directly, instead of inserting a branch for the large-count case themselves.
 
 To optimize further, one could implement
 \texttt{MPIX\_Type\_contiguous\_x} using internals of the MPI implementation
-instead of calling six MPI datatype functions.
+instead of calling six MPI datatype functions.  Considering we are operating on
+gigabytes of data, the performance gains one might wrest from such an approach
+would be limited.
 
 \subsection{Limitations}
 
@@ -40,15 +42,16 @@ Such computers do not exist nor is it likely that they will exist
 in the foreseeable future.
 
 BigMPI only supports built-in datatypes.  Code already using
-derived-datatypes should already be able to handle large
-counts without BigMPI \todo{talk about HINDEXED\_X in ROMIO}
+derived-datatypes should already be able to handle large counts without BigMPI\@.
+However, see Section~\ref{sec:romio_typeproc} for an example of HINDEXED not
+being sufficient.
 
 Support for \texttt{MPI\_IN\_PLACE} is not implemented in some cases and
 implemented inefficiently in others.
 Using \texttt{MPI\_IN\_PLACE} is discouraged at the present time.
 We hope to support it more effectively in the future.
 
-BigMPI requires C99.  The BigMPI developers do not forsee systems with large
+BigMPI requires C99.  The BigMPI developers do not foresee systems with large
 amount of memory or disk space also offering a compiler without this level of language support.
 
 BigMPI only has C bindings right now.
