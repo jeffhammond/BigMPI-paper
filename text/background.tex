@@ -120,7 +120,7 @@ built-in reduction operations, BigMPI turns a single call for a large count into
 calls with count less than $2^{31}$, but this only works for the blocking case.
 It is not possible to return a single request object associated with more than one
 nonblocking operation.  Generalized requests, the MPI-standard way to implement non-blocking operations in a library,  are not a viable alternative for
-reasons that will be described later.
+reasons that have been documented in other work (\cite{latham:grequest-extensions}).
 
 
 %How do I support MPI\_IN\_PLACE inside of my user-defined reduction?

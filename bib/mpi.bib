@@ -348,3 +348,29 @@ eprint = {http://pubs.acs.org/doi/pdf/10.1021/ct700301q}
   year={2011},
   publisher={World Scientific}
 }
+
+@Article{latham:grequest-extensions,
+  author = {Robert Latham and William Gropp and Robert Ross and Rajeev Thakur},
+  title = {{Extending the MPI-2 Generalized Request Interface}},
+  journal = {Lecture Notes in Computer Science}, 
+  booktitle = {14th European PVM/MPI User's Group Meeting},
+  note ={(EuroPVM/MPI 2007)},
+  year = {2007},
+  month = {October},
+  pages = {223-232},
+  doi = {10.1007/978-3-540-75416-9_33},
+  url = {http://www.springerlink.com/content/y332095819261422},
+  publsher = {Springer-Verlag Heidelberg},
+  pdf = {papers/latham_grequest-enhance.pdf},
+  abstract = {The MPI-2 standard added a new feature to MPI called generalized
+              requests. Generalized requests allow users to add new nonblocking
+              operations to MPI while still using many pieces of MPI
+              infrastructure such as request objects and the progress
+              notification routines (MPI_Test, MPI_Wait). The generalized request design as it stands, however, has deficiencies regarding
+              typical use cases. These deficiencies are particularly evident in
+              environments that do not support threads or signals, such as the
+              leading petascale systems (IBM Blue Gene/L, Cray XT3 and XT4).
+              This paper examines these shortcomings, proposes extensions to
+              the interface to overcome them, and presents implementation
+              results.},
+}
