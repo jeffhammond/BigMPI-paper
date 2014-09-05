@@ -2,8 +2,6 @@
 
 \section{Background}
 
-THIS PROBABLY DOES NOT BELONG HERE
-
 The MPI Forum resolved the large-count issue by deciding the standard already
 had sufficient routines to support large-count workloads, and left the matter
 of presentation to a vaguely specified additional library.  We took up this
@@ -83,7 +81,8 @@ int MPIX_Type_contiguous_x(MPI_Count count,
     int blklens[2]            = {1,1};
     MPI_Aint disps[2]         = {0,remdisp};
     MPI_Datatype types[2]     = {chunks,remainder};
-    MPI_Type_create_struct(2, blklens, disps, types, newtype);
+    MPI_Type_create_struct(2,
+    	blklens, disps, types, newtype);
 
     MPI_Type_free(&chunks);
     MPI_Type_free(&remainder);
