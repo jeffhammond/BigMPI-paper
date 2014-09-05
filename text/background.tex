@@ -4,24 +4,30 @@
 
 THIS PROBABLY DOES NOT BELONG HERE
 
-In order to understand the implementation issues associated with
-large-count support in MPI, we prototyped an implementation of
-essentially all of the communication functionality in MPI-3 so as to 
-support large counts.  
-The software implementation is found in the open-source BigMPI
-library and is relatively friendly to users, i.e. it has both a Cmake
+The MPI Forum resolved the large-count issue by deciding the standard already
+had sufficient routines to support large-count workloads, and left the matter
+of presentation to a vaguely specified additional library.  We took up this
+challenge, writing a prototype implementation of
+essentially all of the communication functionality in MPI-3.  Our interface
+differs from standard MPI only in promoting the ``count'' of the (count,
+datatype) pair to the larger MPI\_Count type.  The software implementation is
+found in the open-source BigMPI
+library and is relatively friendly to users, i.e.\ it has both a Cmake
 and an Autotools build system and requires a generic programming
 environment composed of a C99 compiler and an implementation
 of MPI-3.
 
-The most common functionality in MPI -- including all of the point-to-point,
-which includes both two-sided and one-sided in this context -- were
-trivial w.r.t. large-count support via MPI datatypes.
+MPI's point-to-point routines, both two-sided and one-sided, were
+trivial to implement via MPI datatypes.  This class of routines provides the
+most commonly used MPI functionality, so for many codes the Forum has been
+proven correct.  As we will see in Section~\ref{sec:reductions},
+not all parts of the MPI
+standard will be so straightforward.
 
-All variants of send and receive, blocking and nonblocking variants of
+BigMPI implements all variants of send and receive, blocking and nonblocking variants of
 the homogeneous collectives (bcast, gather, scatter, allgather, alltoall)
-and RMA (put, get, accumulate, get\_accumulate) were implemented
-using the simple shown in Figure~\ref{code:mpi_send_x}.
+and RMA (put, get, accumulate, get\_accumulate)
+along the lines of the example for MPI\_Send, shown in Figure~\ref{code:mpi_send_x}.
 
 \begin{figure}
 \begin{code}
@@ -44,7 +50,7 @@ int MPIX_Send_x(const void *buf, MPI_Count count,
 \end{code}
 \label{code:mpi_send_x}
 \caption{The implementation of large-count Send, which serves as a template
-for many other routines in MPI-3.}
+for many other MPI-3 routines.}
 \end{figure}
 
 The critical function in all of the large-count implementations noted above
@@ -52,6 +58,8 @@ is \texttt{MPIX\_Type\_contiguous\_x}, which emits a single datatype that
 represents up to \texttt{SIZE\_MAX} elements.
 Supporting more elements than can fit into $2^{63}$ bytes of memory is
 not necessary, since such a system is unlikely to exist in the foreseeable future.
+However, since we now express these parameters in our own datatypes, we introduce
+a degree of flexibility not currently present in the MPI standard.
 
 
 
@@ -84,7 +92,9 @@ int MPIX_Type_contiguous_x(MPI_Count count,
 }
 \end{code}
 \label{code:type_contig_x}
-\caption{Function for construction a large-count contiguous datatype.}
+\caption{Function for construction a large-count contiguous datatype.
+A vector type describes a series of adjacent chunks, and a struct type picks up
+any remaining data in case the count is not evenly divisible.}
 \end{figure}
 
 %In the general case, MPI\_Type\_create\_struct is required, although BigMPI tries to factorize the count into C integers so we can use MPI\_Type\_vector.
@@ -92,6 +102,7 @@ int MPIX_Type_contiguous_x(MPI_Count count,
 %Ticket 423 would improve user experience because it addresses the common case of large counts of built-ins.
 
 \subsection{Reductions}
+\label{sec:reductions}
 
 Large-count support for reductions poses a challenge, particularly in the nonblocking case.
 The MPI standard stipulates that built-in reduction operations can be used with built-in types
@@ -108,17 +119,14 @@ Since many MPI implementations have optimized implementations of reductions for
 built-in reduction operations, BigMPI turns a single call for a large count into multiple
 calls with count less than $2^{31}$, but this only works for the blocking case.
 It is not possible to return a single request object associated with more than one
-nonblocking operation and generalized requests are not a viable alternative for
+nonblocking operation.  Generalized requests, the MPI-standard way to implement non-blocking operations in a library,  are not a viable alternative for
 reasons that will be described later.
 
 
+%How do I support MPI\_IN\_PLACE inside of my user-defined reduction?
+%I want to use MPI\_Reduce\_local?
 
-User-defined ops required for user-defined types.  This would be fixed by tickets 34+338.
-
-How do I support MPI\_IN\_PLACE inside of my user-defined reduction?
-I want to use MPI\_Reduce\_local?
-
-Blocking reductions can use the cleaver \todo{what the heck is a cleaver?}
+%Blocking reductions can use the cleaver \todo{what the heck is a cleaver?}
 
 \subsection{Vector-argument collectives}
 
@@ -132,7 +140,7 @@ MPI\_Neighbor\_alltoallw displacements are MPI\_Aint not int.  This is good.
 
 Neighborhood collectives require special communicators that must be created for each call (and possibly cached).
 
-Must allocate new argument vectors and, in the case of ?!alltoall?, we wastefully splat the same value in all locations.
+Must allocate new argument vectors and, in the case of alltoall, we wastefully splat the same value in all locations.
 
 % V-collectives using P2P and RMA
 
