@@ -87,13 +87,31 @@ int MPIX_Type_contiguous_x(MPI_Count count,
 \caption{Function for construction a large-count contiguous datatype.}
 \end{figure}
 
-In the general case, MPI\_Type\_create\_struct is required, although BigMPI tries to factorize the count into C integers so we can use MPI\_Type\_vector.
+%In the general case, MPI\_Type\_create\_struct is required, although BigMPI tries to factorize the count into C integers so we can use MPI\_Type\_vector.
 
-Ticket 423 would improve user experience because it addresses the common case of large counts of built-ins.
+%Ticket 423 would improve user experience because it addresses the common case of large counts of built-ins.
 
 \subsection{Reductions}
 
-Reductions were not easy
+Large-count support for reductions poses a challenge, particularly in the nonblocking case.
+The MPI standard stipulates that built-in reduction operations can be used with built-in types
+in the case of reductions, which means that performing a reduction on a vector of $N$
+doubles using count=$N$ and type=\texttt{MPI\_DOUBLE} is compatible with \texttt{MPI\_SUM},
+whereas the same reduction performed using a contiguous datatype to represent the vector
+of doubles requires a user-defined reduction operation.
+Thus, BigMPI creates user-defined operations corresponding to all the built-in reductions
+acting on contiguous datatypes.  Inside of these reduction operations, the datatype is
+decoded and the reduction performed using multiple calls to \texttt{MPI\_Reduce\_local}
+and the appropriate built-in reduction operation.
+
+Since many MPI implementations have optimized implementations of reductions for
+built-in reduction operations, BigMPI turns a single call for a large count into multiple
+calls with count less than $2^{31}$, but this only works for the blocking case.
+It is not possible to return a single request object associated with more than one
+nonblocking operation and generalized requests are not a viable alternative for
+reasons that will be described later.
+
+
 
 User-defined ops required for user-defined types.  This would be fixed by tickets 34+338.
 
