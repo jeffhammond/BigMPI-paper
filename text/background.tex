@@ -47,6 +47,14 @@ int MPIX_Send_x(const void *buf, MPI_Count count,
 for many other routines in MPI-3.}
 \end{figure}
 
+The critical function in all of the large-count implementations noted above
+is \texttt{MPIX\_Type\_contiguous\_x}, which emits a single datatype that
+represents up to \texttt{SIZE\_MAX} elements.
+Supporting more elements than can fit into $2^{63}$ bytes of memory is
+not necessary, since such a system is unlikely to exist in the foreseeable future.
+
+
+
 \begin{figure}
 \begin{code}
 int MPIX_Type_contiguous_x(MPI_Count count, 

@@ -20,7 +20,6 @@ the solution rather than \texttt{MPI\_Count} everywhere.
 
 All of the communication functions follow the same pattern, demonstrated in
 Figure~\ref{code:mpi_send_x}.
-\end{figure}
 
 BigMPI is optimized for the common case when count is smaller than $2^{31}$
 with a \texttt{likely\_if} macro to minimize the performance hit for

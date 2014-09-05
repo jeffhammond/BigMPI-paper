@@ -70,28 +70,24 @@ libraries~\cite{physis, libgeodecomp} operate on data structures with
 user-defined dimensions. To ensure correctness, developers would need
 to safeguard all communication functions which operate on user data.
 
-As we will demonstrate in the following sections, this is not a
-trivial task for all communication operations. A generic, reusable
-solution as provided by BigMPI alleviates the required implementation
-effort; library users can use preprocessor directives in a header file
-to select the appropriate set of communication functions:
-
-\begin{code}
-// configuration header:
-#ifdef BIGMPI
-#define MPIX_Bcast_x MPIX_Bcast_x
-#define MPIX_Send_x MPIX_Send_x
-...
-#else // cannot use count>INT_MAX
-#define MPIX_Bcast_x MPI_Bcast
-#define MPIX_Send_x MPI_Send
-...
-#endif
-
-// usage:
-    MPIX_Bcast_x(buf, large_count, MPI_BYTE, 0, mycomm);
-#endif
-\end{code}
+%As we will demonstrate in the following sections, this is not a
+%trivial task for all communication operations. A generic, reusable
+%solution as provided by BigMPI alleviates the required implementation
+%effort; library users can use preprocessor directives in a header file
+%to select the appropriate set of communication functions:
+%
+%\begin{code}
+%// configuration header:
+%#ifdef BIGMPI
+%#define MPIX_Bcast_x MPIX_Bcast_x
+%#define MPIX_Send_x MPIX_Send_x
+%...
+%#else // cannot use count>INT_MAX
+%#define MPIX_Bcast_x MPI_Bcast
+%#define MPIX_Send_x MPI_Send
+%...
+%#endif
+%\end{code}
 
 This project aspires to make it as easy as possible to support arbitrarily
 large counts ($2^{63}$ elements exceeds the local storage capacity of computers
