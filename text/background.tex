@@ -203,27 +203,56 @@ follows these recipes closely.
 Nonblocking receives are pre-posted by the root or all ranks as appropriate;
 the root or all ranks then call nonblocking send; all ranks then call Waitall.
 As the large-count BigMPI send-recv functions are used, there is no need for
-$O(n_{proc})$ vectors of datatypes, etc.; only a vector of \texttt{MPI\_Request}
+$O(n_{proc})$ vectors of datatypes, etc. -- only a vector of \texttt{MPI\_Request}
 objects for the nonblocking operations is required.
 
+A third implementation of v-collectives is to use RMA (one-sided) that follows
+the same traffic pattern as the point-to-point implementation.
+In this case, a MPI window must be created associated with the source (target)
+buffers and \texttt{MPI\_Get} (\texttt{MPI\_Put}) operations used for moving data.
+The most appropriate synchronization mode for mapping collectives to RMA
+is \texttt{MPI\_Win\_fence}, although one could use passive target as well.
+In the event that a future version of the MPI standard introduces a nonblocking
+equivalent of \texttt{MPI\_Win\_fence} or \texttt{MPI\_Win\_unlock\_all}, these
+could be used to implement nonblocking v-collectives in terms of RMA; 
+at least within MPI-3, we are limited to the blocking case.
+The RMA implementation was prototyped in BigMPI but is not currently implemented.
 
+While not named as such, \texttt{MPI\_Reduce\_scatter} is a v-collective.
+BigMPI currently does not support this function
+(\texttt{MPI\_Reduce\_scatter\_block} is supported)
+but it is straightforward to implement in terms of  \texttt{MPI\_Reduce} and
+\texttt{MPI\_Scatterv}.
 
 % V-collectives - nonblocking issues
 
-None of the aforementioned solutions works for nonblocking because:
+%None of the aforementioned solutions works for nonblocking because:
+%What request do we return in the case of P2P or RMA?
+%Cannot free argument vectors until complete.
+%Any solution involving generalized requests is untenable for users.  BigMPI might use it.
 
-What request do we return in the case of P2P or RMA?
-
-Cannot free argument vectors until complete.
-
-Any solution involving generalized requests is untenable for users.  BigMPI might use it.
+Unfortunately, there is no way to implement nonblocking v-collectives using 
+the aforementioned approaches.  In the case of the neighborhood collective
+implementation, we cannot free the vector temporaries holding the counts,
+displacements and datatypes until the operation has completed.
+If callback functions associated with request completion were present in the
+MPI standard (see Ref.~\cite{ticket26} for a proposal of this), then it would
+be possible to free the temporary buffers using this callback.
+As noted already, since on cannot associate a single request with multiple
+nonblocking operations, the point-to-point implementation is inviable
+for the nonblocking v-collectives.
+Finally, all relevant forms of MPI RMA synchronization have blocking semantics
+and thus cannot be used to implement nonblocking collectives.
 
 \subsection{Neighborhood collectives}
 
-Scalar collectives are easy.
+%Scalar collectives are easy.
+%V-collectives: map to ALLTOALLW
+%Same problem as before with nonblocking regarding the allocated argument vectors.
+%If not for MPI\_Aint displacements in ALLTOALLW, we would have to drop into P2P and MPICH generalized requests.
 
-V-collectives: map to ALLTOALLW
-
-Same problem as before with nonblocking regarding the allocated argument vectors.
-
-If not for MPI\_Aint displacements in ALLTOALLW, we would have to drop into P2P and MPICH generalized requests.
+The implementation of large-count neighborhood collectives is straightforward
+using the approach noted above for mapping v-collectives to \texttt{MPI\_Neighborhood\_alltoallw},
+except that we omit the creation of the distributed graph communicator.
+All aforementioned issues with the nonblocking cases still exist, as temporary vectors
+are still required for the mapping of $(large\_count,type)$ to $(1,large\_type)$ for all ranks.
