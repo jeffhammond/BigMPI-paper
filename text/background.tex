@@ -118,38 +118,95 @@ Since many MPI implementations have optimized implementations of reductions for
 built-in reduction operations, BigMPI turns a single call for a large count into multiple
 calls with count less than $2^{31}$, but this only works for the blocking case.
 It is not possible to return a single request object associated with more than one
-nonblocking operation.  Generalized requests, the MPI-standard way to implement non-blocking operations in a library,  are not a viable alternative for
-reasons that have been documented in other work (\cite{latham:grequest-extensions}).
+nonblocking operation.  
+Generalized requests - the MPI-standard way to implement non-blocking operations 
+in a library - are not a viable alternative for reasons that have been documented 
+in other work (\cite{latham:grequest-extensions}).
 
-
-%How do I support MPI\_IN\_PLACE inside of my user-defined reduction?
-%I want to use MPI\_Reduce\_local?
-
-%Blocking reductions can use the cleaver \todo{what the heck is a cleaver?}
+Another negative consequence of user-defined reductions is that  \texttt{MPI\_IN\_PLACE}
+cannot be supported.  The user-defined reduce function interface (see below) does not expose
+the information required to do an arbitrary in-place reduction.
+\begin{code}
+MPI_User_function(void* invec, void* inoutvec, 
+                  int *len, MPI_Datatype *datatype);
+\end{code}
+The breaking up a single large-count reduction into multiple calls avoids this
+issue with user-defined reductions, but it is only viable for the blocking case.
 
 \subsection{Vector-argument collectives}
 
-All V-collectives turn into ALLTOALLW because different counts implies different large-count types.
+Vector-argument collectives (henceforth v-collectives) are the generalization of 
+\texttt{MPI\_Scatter}, \texttt{MPI\_Gather}, \texttt{MPI\_Alltoall} etc.
+when the count but not the datatype varies across processes.
+When datatypes are used to support large counts, all of these operations must be
+mapped to \texttt{MPI\_Alltoallw} because each large count will be mapped
+to a different user-defined datatype.
+Using \texttt{MPI\_Alltoallw} to implement, e.g., a large-count \texttt{MPI\_Scatterv} is
+particularly inefficient because the former assumes inputs from every process,
+whereas the latter only uses the input from the root.
+However, the overhead of scanning a vector of counts where all but one is zero
+is inconsequential compared to the cost of transmitting a buffer of $2^{31}$ bytes.
+%Additionally, such vectors are unlikely to be particularly long since scattering
+%a buffer that would run into large-count issues r
 
-ALLTOALLW displacements given in bytes are C int and therefore it is impossible to offset more than 2GB into the buffer.
+%All V-collectives turn into ALLTOALLW because different counts implies different large-count types.
 
-NEIGHBOR\_ALLTOALLW to the rescue?!?!
+The v-collectives encounter a second, more subtle issue due to the mapping to
+\texttt{MPI\_Alltoallw}.  Because this function takes a vector of datatypes, the
+displacements into the input and output vectors are given in bytes,
+not element count, and the type of this offset is a C integer.
+This creates an overflow situation \textit{even in the case
+where the input buffer is less than 2 GiB} because a vector of one billion
+alternating integers and floats may require an byte-offset in excess of $2^{31}$.
+Thus, \texttt{MPI\_Alltoallw} is not an acceptable solution for the large-count
+v-collectives because of the likelihood of overflowing in the displacement vector.
+The use of C integer instead of \texttt{MPI\_Aint} for the displacement vector in
+the  collective operations added prior to MPI-3 is a unfortunate historical artifact,
+as \texttt{MPI\_Aint} was not introduced until \todo{When was AINT introduced?}.
 
-MPI\_Neighbor\_alltoallw displacements are MPI\_Aint not int.  This is good.
+%ALLTOALLW displacements given in bytes are C int and therefore it is impossible to offset more than 2GB into the buffer.
+%NEIGHBOR\_ALLTOALLW to the rescue?!?!
+%MPI\_Neighbor\_alltoallw displacements are MPI\_Aint not int.  This is good.
+%Neighborhood collectives require special communicators that must be created for each call (and possibly cached).
+%Must allocate new argument vectors and, in the case of alltoall, we wastefully splat the same value in all locations.
 
-Neighborhood collectives require special communicators that must be created for each call (and possibly cached).
+Fortunately, the overflow issue with displacements in \texttt{MPI\_Alltoallw} is
+resolved using the neighborhood collectives introduced in MPI-3, which
+use \texttt{MPI\_Aint} for displacements.
+On the other hand, neighborhood collectives require an appropriate
+communicator, which must be constructed prior to calling \texttt{MPI\_Neighborhood\_alltoallw}.
+BigMPI creates a distributed graph communicator using \texttt{MPI\_Dist\_graph\_adjacent}
+on-the-fly for every invocation of the large-count v-collectives, which is assumed to be
+insignificant overhead compared to the data movement entailed in such an operation.
 
-Must allocate new argument vectors and, in the case of alltoall, we wastefully splat the same value in all locations.
+Thus, the implementation of large-count v-collectives using \texttt{MPI\_Neighborhood\_alltoallw} 
+requires two $O(n_{proc})$ setup steps: the first is to create the vectors of send and receive
+counts, displacements and datatypes and the second is to create a distributed graph communicator.
+Creating the vector of datatypes requires $O(n_{proc})$ calls to \texttt{BigMPI\_Type\_contiguous\_x},
+which itself requires six MPI calls, although all of these are expected to be inexpensive.
 
 % V-collectives using P2P and RMA
+%One can follow the definition in MPI to implement all of the V-collectives using P2P.
+%RMA (with win\_fence synchronization) also works for the V-collectives.
+%Allgatherv using nproc calls to Bcast also works.
+%Large-count definitely outside of recursive doubling regime so little to optimize...
 
-One can follow the definition in MPI to implement all of the V-collectives using P2P.
+An alternative approach to implementing large-count v-collectives is to map
+these to point-to-point operations, although this only works for blocking operations
+for the reasons noted above.
+Given that large-count v-collectives are well outside of the regime where latency-oriented 
+optimizations like recursive-doubling are important, this is unlikely to have a significant impact 
+on performance and it eliminates the need for the $O(n_{proc})$ setup steps.
+The MPI standard describes every collective in terms of its implementation 
+in terms of send-recv calls; the BigMPI implementation in terms of point-to-point
+follows these recipes closely.
+Nonblocking receives are pre-posted by the root or all ranks as appropriate;
+the root or all ranks then call nonblocking send; all ranks then call Waitall.
+As the large-count BigMPI send-recv functions are used, there is no need for
+$O(n_{proc})$ vectors of datatypes, etc.; only a vector of \texttt{MPI\_Request}
+objects for the nonblocking operations is required.
 
-RMA (with win\_fence synchronization) also works for the V-collectives.
 
-Allgatherv using nproc calls to Bcast also works.
-
-Large-count definitely outside of recursive doubling regime so little to optimize...
 
 % V-collectives - nonblocking issues
 
