@@ -15,17 +15,22 @@ works well, until the ``count'' exceeds the range of the native integer type
 We call this the ``large-count'' problem.
 
 When drafting MPI-3 the MPI Forum took a minimalist approach large-count 
-support~\cite{squyres-blog-large-count,ticket265}.
-The forum introduced a handful of MPI\_Foo\_x routines to make rudimentary
-large-count support possible.  After lengthy deliberation, the
-Forum asserted that ``just use datatypes'' is a sufficient solution for users.
+support~\cite{ticket265}.
+The forum introduced a handful of MPI\_Foo\_x routines that provide a large-count
+equivalent of an existing MPI\_Foo to make rudimentary large-count support possible.
+To be explicit, in this context, Foo is ``Get\_elements'', ``Type\_size'', ``Type\_get\_extent'', 
+``Type\_get\_true\_extent'', ``Status\_set\_elements'', which is the minimal set
+of functions that must support large counts in order for one to be able to deal 
+with derived datatypes that represent large counts.
+After lengthy deliberation, the Forum asserted that ``just use datatypes'' is 
+a sufficient solution for users~\cite{squyres-blog-large-count}.
 For example, one can describe 4 billion bytes as 1 billion 4-byte integers.
 Or, one could use contiguous MPI dataypes to describe 16 billion bytes as 1,000
-16 million-byte chunks.  For these simple examples it is easy to envision a
+16 million-byte chunks.  For these simple examples, it is easy to envision a
 solution. It is only through implementing the proposed approach for all cases
 in MPI that one discovers the challenges hidden in such an assertion.
 
-BigMPI provides a high-level library that supports large counts.
+BigMPI provides a high-level library that attempts to support large counts.
 It was written to test the Forum's assertion
 that datatypes are sufficient for large-count support and to provide a drop-in library
 solution for applications requiring large-count support.
@@ -38,7 +43,7 @@ space and is unable to do MPI communication on more than $2^{31}$ elements
 despite having sufficient memory to allocate such buffers.
 %BigMPI does not attempt to support large-counts on systems where
 %C \texttt{int} and \texttt{void\*} are both 32 bits.
-As systems with more than $2^{63}$ bytes (8192 petibytes) of memory 
+As systems with more than $2^{63}$ bytes (8192 PiB) of memory 
 per node are unlikely to exist for the foreseeable future --
 the total system memory capacity for an exascale machine has been 
 predicted to be 50-100 petabytes~\cite{shalf2011exascale} --

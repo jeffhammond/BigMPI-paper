@@ -3,11 +3,14 @@
 \begin{abstract}
 To describe a structured region of memory, the routines in the MPI standard use
 a (count, datatype) pair.  The C specification for this convention uses an
-{\texttt int} type.  Since C {\texttt int} types are nearly always 32 bits
+\texttt{int} type.  Since C \texttt{int} types are nearly always 32 bits
 large and signed,
-counting more than $2^31$ 2 billion elements poses a challenge.
+counting more than $2^{31}$ elements poses a challenge.
 Instead of changing the existing MPI routines, and all consumers of those
-routines, the MPI Forum asserts users can build up large datatypes from smaller
-types.  BigMPI demonstrates a way to perform such a construction, reveals
+routines, the MPI Forum asserts users can build up large datatypes from smaller types.  
+To evaluate this hypothesis and to provide a user-friendly solution to the large-count
+issue, we have developed BigMPI, a library on top of MPI that maps
+large-count MPI-like functions to MPI-3 standard features.
+BigMPI demonstrates a way to perform such a construction, reveals
 shortcomings of the MPI standard, and uncovers bugs in MPI implementations.
 \end{abstract}
