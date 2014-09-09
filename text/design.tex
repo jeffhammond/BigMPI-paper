@@ -269,6 +269,11 @@ All of the communication functions follow the same pattern, demonstrated in
 Figure~\ref{code:mpi_send_x}.
 \end{comment}
 
+\subsection{Interface}
+
+Our interface differs from standard MPI only in promoting the ``count'' 
+of the (count, datatype) pair to the larger MPI\_Count type.
+
 \subsection{Details}
 
 BigMPI is optimized for the common case when count is smaller than $2^{31}$
@@ -281,6 +286,12 @@ To optimize further, one could implement
 instead of calling six MPI datatype functions.  Considering we are operating on
 gigabytes of data, the performance gains one might wrest from such an approach
 would be limited.
+
+The software implementation is found in the BSD-licensed BigMPI
+library and is relatively friendly to users, i.e.\ it has both a Cmake
+and an Autotools build system and requires a generic programming
+environment composed of a C99 compiler and an implementation
+of MPI-3.
 
 \subsection{Limitations}
 
