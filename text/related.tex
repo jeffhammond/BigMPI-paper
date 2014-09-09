@@ -1,3 +1,34 @@
 % !TEX root = ../bigmpi.tex
 
 \section{Related Work}
+
+As noted in \S\ref{sec:intro} and \S\ref{sec:mpi4}, there have been efforts within
+the MPI Forum to address count-safety issues in the MPI standard.
+Both MPICH and OpenMPI have made significant strides towards count-safety
+at the implementation level.  MPICH currently passes all of the large-count tests
+in its own test suite, although these tests may not exercise all possible code paths.
+We are not aware of any other efforts to implement a high-level library on top of
+MPI-3 that supports large-count usage in the manner that BigMPI does.
+
+\subsection{OpenSHMEM}
+
+OpenSHMEM 1.0~\cite{kuehn2012openshmem} conscientiously uses \texttt{size\_t} for
+counts and \texttt{ptrdiff\_t} for offsets throughout, hence is a count-safe API.
+As there are numerous implementations of OpenSHMEM, it is not possible to evaluate
+the count-safety of all of them.
+However, when a count-safe API like DMAPP~\cite{DMAPP} is used, this is more likely
+than if the implementation is required to map from 64-bit counts to 32-bit counts internally.
+
+\subsection{GASNet}
+
+GASNet uses \texttt{size\_t} and is thus count-safe.  We have not attempted to evaluate
+the count-safety of GASNet implementations, as there are numerous conduits, each of
+which might have large-count issues due to platform-specific low-level APIs and
+bugs in system software.
+
+\subsection{GA/ARMCI}
+
+Both the Global Arrays~\cite{nieplocha:94} and ARMCI~\cite{nieplocha:99} interfaces
+use native integer types in both C and Fortran to represent element counts, and
+in the case of ARMCI Put and Get, the count is in terms of bytes, not elements.
+Thus, both models have the same (or worse) large-count issues as MPI-3.
