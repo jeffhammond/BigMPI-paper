@@ -1,0 +1,30 @@
+% !TEX root = ../bigmpi.tex
+
+\subsection{Suggestions for MPI-4}
+
+% (1) 34+338 (+339?) required for sane reductions.
+Tickets 34~\cite{ticket34} and 338~\cite{ticket338}
+% https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/338
+would allow BigMPI (and other users such as PETSc) to leverage ``accumulate-style
+behavior'':  the built-in operations can work on user-defined
+datatypes, but on a element-wise basis.
+
+Ticket 339~\cite{ticket339} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/339
+(``User-defined op with derived datatypes yields space-inefficient reduce'')
+
+% (2) 423 is sugar but it greatly reduces user pain and is trivial to implement.
+Ticket 423~\cite{ticket423} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/423
+(``add MPI\_Type\_contiguous\_x'') is syntactic sugar, but it will go a long way towards reducing users' friction when dealing with large counts.  As is evidenced by BigMPI, the change is straightforward to implement.
+
+%430 is required to support nonblocking v-collectives in a straightforward way.
+When applying BigMPI's large-count strategy to the v-collectives, the (counts[], type) description has to be mapped to (newcount[], newtypes[]),
+and that in turn requires the w-variants.
+Ticket 430~\cite{ticket430}
+% https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/430
+(``large-count v-collectives'') would provide a large-count v-collective and would avoid the need for big temporary memory allocations.
+
+The implementation of non-blocking collectives in BigMPI requires improved generalized requests.
+%MPICH-style generalized requests required (https://svn.mpi-forum.org/trac/mpi-forum-web/wiki/Proposal should be ticket-ized)
+Ticket 457~\cite{ticket457} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/457
+(``expose progress in generalized requests'') would provide sufficient improvement.
+

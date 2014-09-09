@@ -1,0 +1,22 @@
+% !TEX root = ../bigmpi.tex
+
+\subsection{Interface}
+
+The BigMPI API follows the pattern of \texttt{MPI\_Type\_size(\_x)}: 
+all BigMPI functions are identical to their corresponding MPI ones except that
+they end with \texttt{\_x} to indicate that the count arguments have the type
+\texttt{MPI\_Count} instead of \texttt{int}.
+Following the MPICH convention, BigMPI functions use the 
+MPIX namespace because they are not in the MPI standard.
+It is a trivial matter of preprocessing to support arbitrary namespacing
+in the library to make it more friendly to other implementers that
+may wish to support it as an extension in their library.
+
+%Our interface differs from standard MPI only in promoting the ``count'' 
+%of the (count, datatype) pair to the larger MPI\_Count type.
+
+BigMPI has both a Cmake and an Autotools build system for compatibility
+with third-party tools that wish to configure BigMPI automatically.
+A generic programming environment composed of a C99 compiler 
+and ``count-safe'' (i.e. one that supports large-count usage) 
+implementation of MPI-3 is required by BigMPI.

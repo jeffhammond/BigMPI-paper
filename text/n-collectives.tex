@@ -1,0 +1,16 @@
+% !TEX root = ../bigmpi.tex
+
+\subsection{Neighborhood collectives}
+
+%Scalar collectives are easy.
+%V-collectives: map to ALLTOALLW
+%Same problem as before with nonblocking regarding the allocated argument vectors.
+%If not for MPI\_Aint displacements in ALLTOALLW, we would have to drop into P2P and MPICH generalized requests.
+
+The implementation of large-count neighborhood collectives is straightforward
+using the approach noted above for mapping v-collectives to \texttt{MPI\_Neighborhood\_alltoallw},
+except that we omit the creation of the distributed graph communicator.
+All aforementioned issues with the nonblocking cases still exist, as temporary vectors
+are still required for the mapping of $(large\_count,type)$ to $(1,large\_type)$ for all ranks.
+Thus, we identify nonblocking neighborhood collectives as the third example
+where MPI-3 lacks the necessary features to support large counts.

@@ -1,0 +1,40 @@
+% !TEX root = ../bigmpi.tex
+
+\subsection{Reductions}
+\label{sec:reductions}
+
+Large-count support for reductions poses a challenge, particularly in the nonblocking case.
+For the blocking case, it is straightforward to block a single large-count operation into
+multiple normal-count (count$<2^{31}$) operations (we will refer to this as chunking); 
+however, as it is not possible to return a single request object associated with more than 
+one nonblocking operation, we cannot implement nonblocking reductions in this manner.
+Generalized requests - the MPI-standard way to implement non-blocking operations 
+in a library - are not a viable alternative for reasons that have been documented 
+in other work (\cite{latham:grequest-extensions}).
+For the blocking case, it is desirable to use chunking because many MPI implementations 
+have optimized implementations of reductions for built-in reduction operations.
+
+The MPI standard stipulates that built-in reduction operations can be used with built-in types
+in the case of reductions, which means that performing a reduction on a vector of $N$
+doubles using count=$N$ and type=\texttt{MPI\_DOUBLE} is compatible with \texttt{MPI\_SUM},
+whereas the same reduction performed using a contiguous datatype to represent the vector
+of doubles requires a user-defined reduction operation.
+Thus, BigMPI creates user-defined operations corresponding to all the built-in reductions
+acting on contiguous datatypes.  Inside of these reduction operations, the datatype is
+decoded and the reduction performed using multiple calls to \texttt{MPI\_Reduce\_local}
+and the appropriate built-in reduction operation.
+This is a general solution that works for both the blocking and nonblocking cases,
+at least for out-of-place reductions.
+
+Unfortunately, user-defined reductions cannot support \texttt{MPI\_IN\_PLACE}.
+The user-defined reduce function interface (see below) does not expose
+the information required to do an arbitrary in-place reduction.
+\begin{code}
+MPI_User_function(void* invec, void* inoutvec, 
+                  int *len, MPI_Datatype *datatype);
+\end{code}
+As user-defined reduce operations are the only way to implement
+large-count nonblocking reductions, we identify this as the first example
+where MPI-3 lacks the necessary features to support large counts.
+Lack of support for \texttt{MPI\_IN\_PLACE} in user-defined reductions
+is a related shortcoming of the MPI-3 standard.

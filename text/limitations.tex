@@ -1,0 +1,32 @@
+\subsection{Limitations}
+
+As previously stated, BigMPI does not actually support the full
+range of \texttt{MPI\_Count}, but rather only the range of the
+address space (i.e. \texttt{size\_t} and \texttt{MPI\_Aint}), as buffers
+larger than the address space are rather difficult to allocate.
+
+BigMPI only supports built-in datatypes.  
+Code already using derived-datatypes should already be able 
+to handle large counts without BigMPI\@.
+However, see Section~\ref{sec:romio_typeproc} 
+for an example of HINDEXED not being sufficient.
+
+Support for \texttt{MPI\_IN\_PLACE} is not 
+implemented in some cases (e.g. where it is impossible) and 
+implemented inefficiently (i.e. via a buffer copy) in others.
+Using \texttt{MPI\_IN\_PLACE} is discouraged at the present time
+although it is expected that it will be supported efficiently whenever
+possible in the release version of BigMPI.
+
+BigMPI requires C99.  Fifteen years is more than enough time for compiler 
+implementers interested in supporting ISO languages to provide a C99
+compiler.
+
+The MPI-3 standard supports language bindings for C and Fortran --
+the latter via three different mechanisms
+(\texttt{mpif.h}, \texttt{use mpi} and \texttt{use mpi\_f08}).
+Currently, BigMPI only provides a C interface, but a Fortran 2003
+interface to the C API via \texttt{ISO\_C\_BINDING} is planned.
+It is expected that C++ programmers will be able to make use of the
+C interface and can implement wrappers consistent with their own
+style of C++ programming.
