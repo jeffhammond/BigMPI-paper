@@ -104,17 +104,12 @@ any remaining data in case the count is not evenly divisible.}
 \input{text/reductions}
 \input{text/v-collectives}
 \input{text/n-collectives}
+\input{text/interface}
+\input{text/limitations}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{comment}
-The API follows the pattern of \texttt{MPI\_Type\_size(\_x)}: all BigMPI
-functions are identical to their corresponding MPI ones except that
-they end with \texttt{\_x} to indicate that the count arguments have the type
-\texttt{MPI\_Count} instead of \texttt{int}.
-BigMPI functions use the MPIX namespace because they are not in the
-MPI standard.
-
 
 \texttt{MPIX\_Type\_contiguous\_x}
 does the heavy lifting.  It's pretty obvious how it works.
@@ -128,10 +123,6 @@ All of the communication functions follow the same pattern, demonstrated in
 Figure~\ref{code:mpi_send_x}.
 \end{comment}
 
-\subsection{Interface}
-
-Our interface differs from standard MPI only in promoting the ``count'' 
-of the (count, datatype) pair to the larger MPI\_Count type.
 
 \subsection{Details}
 
@@ -146,34 +137,4 @@ instead of calling six MPI datatype functions.  Considering we are operating on
 gigabytes of data, the performance gains one might wrest from such an approach
 would be limited.
 
-The software implementation is found in the BSD-licensed BigMPI
-library and is relatively friendly to users, i.e.\ it has both a Cmake
-and an Autotools build system and requires a generic programming
-environment composed of a C99 compiler and an implementation
-of MPI-3.
 
-\subsection{Limitations}
-
-Even though \texttt{MPI\_Count} might be 128b, BigMPI only supports
-64b counts (because of \texttt{MPI\_Aint} limitations and a desire to use \texttt{size\_t}
-in unit tests), so BigMPI is not going to solve your problem if you
-want to communicate more than 8 EiB of data in a single message.
-Such computers do not exist nor is it likely that they will exist
-in the foreseeable future.
-
-BigMPI only supports built-in datatypes.  Code already using
-derived-datatypes should already be able to handle large counts without BigMPI\@.
-However, see Section~\ref{sec:romio_typeproc} for an example of HINDEXED not
-being sufficient.
-
-Support for \texttt{MPI\_IN\_PLACE} is not implemented in some cases and
-implemented inefficiently in others.
-Using \texttt{MPI\_IN\_PLACE} is discouraged at the present time.
-We hope to support it more effectively in the future.
-
-BigMPI requires C99.  The BigMPI developers do not foresee systems with large
-amount of memory or disk space also offering a compiler without this level of language support.
-
-BigMPI only has C bindings right now.
-Fortran 2003 bindings are planned.
-Users desiring C++ bindings are encouraged to contact the BigMPI project.
