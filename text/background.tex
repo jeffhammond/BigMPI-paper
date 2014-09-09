@@ -161,8 +161,8 @@ alternating integers and floats may require an byte-offset in excess of $2^{31}$
 Thus, \texttt{MPI\_Alltoallw} is not an acceptable solution for the large-count
 v-collectives because of the likelihood of overflowing in the displacement vector.
 The use of C integer instead of \texttt{MPI\_Aint} for the displacement vector in
-the  collective operations added prior to MPI-3 is a unfortunate historical artifact,
-as \texttt{MPI\_Aint} was not introduced until \todo{When was AINT introduced?}.
+the  collective operations added prior to MPI-3 is a unfortunate oversight that
+cannot be rectified without breaking backwards compatibility.
 
 %ALLTOALLW displacements given in bytes are C int and therefore it is impossible to offset more than 2GB into the buffer.
 %NEIGHBOR\_ALLTOALLW to the rescue?!?!
