@@ -3,7 +3,7 @@
 \subsection{Vector-argument collectives}
 
 Vector-argument collectives (henceforth v-collectives) are the generalization of 
-\texttt{MPI\_Scatter}, \texttt{MPI\_Gather}, \texttt{MPI\_Alltoall} etc.
+e.g. \texttt{MPI\_Scatter}, \texttt{MPI\_Gather}, \texttt{MPI\_Alltoall}
 when the count but not the datatype varies across processes.
 When datatypes are used to support large counts, all of these operations must be
 mapped to \texttt{MPI\_Alltoallw} because each large count will be mapped
@@ -39,7 +39,7 @@ cannot be rectified without breaking backwards compatibility.
 %Must allocate new argument vectors and, in the case of alltoall, we wastefully splat the same value in all locations.
 
 Fortunately, the overflow issue with displacements in \texttt{MPI\_Alltoallw} is
-resolved using the neighborhood collectives introduced in MPI-3, which
+resolved using the neighborhood collectives introduced in MPI-3, which do
 use \texttt{MPI\_Aint} for displacements.
 On the other hand, neighborhood collectives require an appropriate
 communicator, which must be constructed prior to calling \texttt{MPI\_Neighborhood\_alltoallw}.
@@ -67,7 +67,7 @@ Given that large-count v-collectives are well outside of the regime where latenc
 optimizations like recursive-doubling are important, this is unlikely to have a significant impact 
 on performance and it eliminates the need for some of the $O(n_{proc})$ setup steps.
 The MPI standard describes every collective in terms of its implementation 
-in terms of send-recv calls; the BigMPI implementation in terms of point-to-point
+in terms of send-recv calls; the point-to-point BigMPI implementation 
 follows these recipes closely:
 (1) nonblocking receives are pre-posted by the root or all ranks as appropriate;
 (2) the root or all ranks then call nonblocking send; 
@@ -86,18 +86,16 @@ In the event that a future version of the MPI standard introduces a nonblocking
 equivalent of \texttt{MPI\_Win\_fence} or \texttt{MPI\_Win\_unlock\_all}, these
 could be used to implement nonblocking v-collectives in terms of RMA; 
 at least within MPI-3, we are limited to the blocking case.
-The RMA implementation was prototyped in BigMPI but is not currently implemented
-because no performance benefit of one-sided is expected due to the current state
-of RMA implementations, which map one-sided operations to two-sided ones internally.
+The RMA implementation was prototyped in BigMPI but is not currently implemented.
+%because no performance benefit of one-sided is expected due to the current state
+The current state of RMA implementations map one-sided operations to two-sided ones internally, thus we would expect to see no performance benefit from BigMPI's RMA approach.
 However, it is possible that noticeable performance improvements will be
 observed if RMA operations exploit RDMA hardware.
 
 While not named as such, \texttt{MPI\_Reduce\_scatter} is a v-collective.
 BigMPI currently does not yet support this function
-(\texttt{MPI\_Reduce\_scatter\_block} is supported, however)
 but it is straightforward to implement in terms of  \texttt{MPI\_Reduce} and
-\texttt{MPI\_Scatterv}.
-
+\texttt{MPI\_Scatterv}. (\texttt{MPI\_Reduce\_scatter\_block} is supported, however)
 % V-collectives - nonblocking issues
 
 %None of the aforementioned solutions works for nonblocking because:
@@ -112,8 +110,8 @@ displacements and datatypes until the operation has completed.
 If callback functions associated with request completion were present in the
 MPI standard (see Ref.~\cite{ticket26} for a proposal of this), then it would
 be possible to free the temporary buffers using this callback.
-As noted already, since on cannot associate a single request with multiple
-nonblocking operations, the point-to-point implementation is inviable
+As noted already, since one cannot associate a single request with multiple
+nonblocking operations, the point-to-point implementation is not viable
 for the nonblocking v-collectives.
 Finally, all relevant forms of MPI RMA synchronization have blocking semantics
 and thus cannot be used to implement nonblocking collectives.
