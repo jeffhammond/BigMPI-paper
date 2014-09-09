@@ -225,6 +225,20 @@ institution = "University of Tennessee, Knoxville",
   url         = {https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/26},
 }
 
+@Misc{ticket265,
+  author      = {Fab Tillier},
+  title       = {Support for large counts using derived datatypes},
+  year        = {2011},
+  url         = {https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/265},
+}
+
+@Misc{squyres-blog-large-count,
+  author      = {Jeff Squyres},
+  title       = {New things in MPI-3: MPI_Count},
+  year        = {2011},
+  url         = {http://blogs.cisco.com/performance/new-things-in-mpi-3-mpi_count/},
+}
+
 @Misc{ticketXYZ,
   author      = {},
   title       = {},
@@ -373,7 +387,8 @@ eprint = {http://pubs.acs.org/doi/pdf/10.1021/ct700301q}
               requests. Generalized requests allow users to add new nonblocking
               operations to MPI while still using many pieces of MPI
               infrastructure such as request objects and the progress
-              notification routines (MPI_Test, MPI_Wait). The generalized request design as it stands, however, has deficiencies regarding
+              notification routines (MPI_Test, MPI_Wait). The generalized request 
+              design as it stands, however, has deficiencies regarding
               typical use cases. These deficiencies are particularly evident in
               environments that do not support threads or signals, such as the
               leading petascale systems (IBM Blue Gene/L, Cray XT3 and XT4).
