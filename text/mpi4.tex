@@ -54,5 +54,12 @@ Ticket 457~\cite{ticket457} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticke
 (``expose progress in generalized requests'') is an older proposal to address well-known
 issues with generalized requests that has long been solved in MPICH but is not standardized.
 
-
+Note that we do not propose to add large-count versions of all MPI communication routines,
+as was suggested but ultimately rejected during MPI-3 discussions.
+Many of the most popular MPI functions work just fine with the datatypes solution and
+the addition of \texttt{MPI\_Type\_contiguous\_x} would make it almost trivial for users to
+realize large-count support in applications.
+Where we have proposed a set of new functions -- large-count v-collectives -- it is because
+the overhead of emulating this support on top of MPI-3 is $O(n_{proc})$ and the semantic mismatch is
+profound (e.g. large-count \texttt{MPI\_Scatterv} as \texttt{MPI\_Neighborhood\_alltoallw} is unnatural).
 
