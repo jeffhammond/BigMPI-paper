@@ -51,6 +51,10 @@ Thus, the implementation of large-count v-collectives using \texttt{MPI\_Neighbo
 requires two $O(n_{proc})$ setup steps: the first is to allocate and populate the vectors of 
 send and receive counts, displacements and datatypes and 
 the second is to create a distributed graph communicator.
+Figures~\ref{code:BigMPI_Create_graph_comm} and~\ref{code:BigMPI_Convert_vectors}
+contain the implementation of these functions, which are included in their entirety to illustrate that,
+while the mapping from v-collectives to \texttt{MPI\_Neighborhood\_alltoallw} is feasible,
+is rather involved and in some cases quite unnatural.
 Creating the vector of datatypes requires $O(n_{proc})$ calls to \texttt{BigMPI\_Type\_contiguous\_x},
 which itself requires six MPI calls, although all of these are expected to be inexpensive.
 
@@ -118,3 +122,115 @@ and thus cannot be used to implement nonblocking collectives.
 
 We identify nonblocking v-collectives as the second example
 where MPI-3 lacks the necessary features to support large counts.
+
+\begin{figure}
+\begin{code}
+void BigMPI_Convert_vectors(int num,
+                            int splat_old_count,
+                            const MPI_Count oldcount,
+                            const MPI_Count oldcounts[],
+                            int splat_old_type,
+                            const MPI_Datatype oldtype,
+                            const MPI_Datatype oldtypes[],
+                            int zero_new_displs,
+                            const MPI_Aint olddispls[],
+                            int newcounts[],
+                            MPI_Datatype newtypes[],
+                            MPI_Aint newdispls[])
+{
+    assert(splat_old_count || (oldcounts!=NULL));
+    assert(splat_old_type  || (oldtypes!=NULL));
+    assert(zero_new_displs || (olddispls!=NULL));
+
+    MPI_Aint lb /* unused */, oldextent;
+    if (splat_old_type) {
+        MPI_Type_get_extent(oldtype, &lb, &oldextent);
+    } else {
+        /* !splat_old_type implies ALLTOALLW, 
+            which implies no displacement zeroing. */
+        assert(!zero_new_displs);
+    }
+
+    for (int i=0; i<num; i++) {
+        /* counts */
+        newcounts[i] = 1;
+
+        /* types */
+        MPIX_Type_contiguous_x(oldcounts[i], 
+                       splat_old_type ? oldtype : oldtypes[i], 
+                       &newtypes[i]);
+        MPI_Type_commit(&newtypes[i]);
+
+        /* displacements */
+        MPI_Aint newextent;
+        /* If we are not splatting old type, it implies 
+         *  ALLTOALLW, which does not scale the 
+         * displacement by the type extent,
+         * nor would we ever zero the displacements. */
+        if (splat_old_type) {
+            MPI_Type_get_extent(newtypes[i], &lb, &newextent);
+            newdispls[i] = (zero_new_displs ? 0 : 
+                            olddispls[i]*oldextent/newextent);
+        } else {
+            newdispls[i] = olddispls[i];
+        }
+    }
+    return;
+}
+\end{code}
+\label{code:BigMPI_Convert_vectors}
+\caption{Function for populating the vector inputs 
+for \texttt{MPI\_Neighborhood\_alltoallw} for the various v-collectives.}
+\end{figure}
+
+\begin{figure}
+\begin{code}
+int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, 
+                             MPI_Comm * comm_dist_graph)
+{
+    int rank, size;
+    MPI_Comm_rank(comm_old, &rank);
+    MPI_Comm_size(comm_old, &size);
+
+    /* in the all case (root == -1), every rank is a 
+     * destination for every other rank;
+     * otherwise, only the root is a destination. */
+    int indeg  = (root == -1 || root==rank) ? size : 0;
+    /* in the all case (root == -1), every rank is a 
+     * source for every other rank;
+     * otherwise, all non-root processes are the 
+     * source for only one rank (the root). */
+    int outdeg = (root == -1 || root==rank) ? size : 1;
+
+    int * srcs = malloc(indegree*sizeof(int));  
+    assert(srcs!=NULL);
+    int * dsts = malloc(outdegree*sizeof(int)); 
+    assert(dsts!=NULL);
+
+    for (int i=0; i<indegree; i++) {
+        srcs[i] = i;
+    }
+    for (int i=0; i<outdegree; i++) {
+        dsts[i] = (root == -1 || root==rank) ? i : root;
+    }
+
+    int empty = MPI_WEIGHTS_EMPTY;
+    int unwtd = MPI_UNWEIGHTED;
+    int rc = MPI_Dist_graph_create_adjacent(comm_old,
+                indeg, srcs, indeg==0 ? empty : unwtd,
+                outdeg, dsts, outdeg==0 ? empty : unwtd,
+                MPI_INFO_NULL, 0 /* reorder */, 
+                comm_dist_graph);
+
+    free(srcs);
+    free(dsts);
+
+    return rc;
+}
+\end{code}
+\label{code:BigMPI_Create_graph_comm}
+\caption{Function for constructing the distributed graph communicator
+that allows the mapping of both rooted (e.g. \texttt{MPI\_Gatherv}) and
+non-rooted (e.g. \texttt{MPI\_Allgatherv}) collectives to
+\texttt{MPI\_Neighborhood\_alltoallw}.}
+\end{figure}

@@ -2,17 +2,17 @@
 
 \section{Design}
 
-
-MPI point-to-point routines, both two-sided and one-sided, were
-trivial to implement via MPI datatypes.  This class of routines provides the
-most commonly used MPI functionality, so for many codes the Forum has been
-proven correct.  However, as we will see in Section~\ref{sec:reductions},
-not all parts of the MPI standard will be so straightforward.
-
+In this section, we describe the mapping from large-count variants
+of MPI-like communication functions to MPI-3 functions, which usually
+involves the creation of a large-count datatype, but possibly much more.
 BigMPI implements all variants of send and receive, blocking and nonblocking variants of
 the homogeneous collectives (bcast, gather, scatter, allgather, alltoall)
 and RMA (put, get, accumulate, get\_accumulate)
 along the lines of the example for MPI\_Send, shown in Figure~\ref{code:mpi_send_x}.
+This class of routines provides the most commonly used MPI functionality, 
+so for many codes the Forum has been proven correct.  
+However, as we will see in Section~\ref{sec:reductions},
+not all parts of the MPI standard were so straightforward.
 
 \begin{figure}
 \begin{code}
