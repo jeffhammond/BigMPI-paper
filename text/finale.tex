@@ -2,12 +2,17 @@
 
 \section{Conclusions and Future Work}
 
-The MPI Forum issued a challenge to consumers of MPI: ``prove to us derived
-datatypes are insufficient''.  In a time where 64 bit systems are widespread,
+In a time where 64 bit systems are widespread,
 but C integer types remain 32 bits, describing large memory or file requests
 will more frequently require the special handling BigMPI provides.  The
-exercise has also revealed several difficulties in the standard, particularly
-in the area of user-defined reductions.
+exercise has also revealed several difficulties in the standard.
+We have described fundamental issues with nonblocking
+collective operations (reductions and both vector and neighborhood collectives)
+that cannot be overcome using MPI-3 features.
+The MPI Forum issued a challenge to consumers of MPI:
+``prove to us that derived datatypes are insufficient''.
+We believe this burden has been met and suggest the following features
+be added to MPI in order to make holistic large-count support a reality.
 
 \input{text/mpi4}
-\input{text/user-advice}
+%\input{text/user-advice}
