@@ -1,10 +1,11 @@
 % !TEX root = ../bigmpi.tex
 
 \begin{abstract}
-	\todo{I don't like this}
 To describe a structured region of memory, the routines in the MPI standard use
 a (count, datatype) pair.  The C specification for this convention uses an
-{\texttt int} type, making descriptions of more than 2 GiB of data difficult.
+{\texttt int} type.  Since C {\texttt int} types are nearly always 32 bits
+large and signed,
+counting more than $2^31$ 2 billion elements poses a challenge.
 Instead of changing the existing MPI routines, and all consumers of those
 routines, the MPI Forum asserts users can build up large datatypes from smaller
 types.  BigMPI demonstrates a way to perform such a construction, reveals

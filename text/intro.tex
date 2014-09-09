@@ -9,7 +9,7 @@ Now more than 20 years old, MPI continues to be widely used and has met the chal
 post-petascale computing, including scaling out to millions of cores~\cite{balaji2011mpi}. 
 In order to scale up, in terms of problem size, one needs
 to be able to describe large working sets.  The existing (count, datatype) pair
-works well, until the 'count' exceeds the range of the native integer type
+works well, until the ``count'' exceeds the range of the native integer type
 (in the case of the C interface, \texttt{int}, which is 32 bits on most current platforms).
 We call this the ``large-count'' problem.
 
@@ -24,11 +24,13 @@ Or, one could use contiguous MPI dataypes to describe 16 billion bytes as 1,000
 solution. It is only through implementing the proposed approach for all cases
 in MPI that one discovers the challenges hidden in such an assertion.
 
-BigMPI provides a high-level library that supports large counts and can be used as 
-drop-in replacement for existing MPI routines.  It was written to test the Forum's assertion
+BigMPI provides a high-level library that supports large counts.
+It was written to test the Forum's assertion
 that datatypes are sufficient for large-count support and to provide a drop-in library
 solution for applications requiring large-count support.
-In this context, ``large-count'' is any count that exceeds \texttt{INT\_MAX}. 
+In this context, ``large-count'' is any count that exceeds \texttt{INT\_MAX}.
+BigMPI makes the smallest possible changes to the MPI standard routines to
+enable large counts, minimizing application changes.
 
 BigMPI is designed for the common case where one has a 64-bit address
 space and is unable to do MPI communication on more than $2^{31}$ elements

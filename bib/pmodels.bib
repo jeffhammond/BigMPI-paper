@@ -128,5 +128,36 @@ eprint = {http://epubs.siam.org/doi/pdf/10.1137/0111030},
     year   = {2012},
     month  = nov,
 }
-
+@InProceedings{li:PnetCDF,
+  author = {Jianwei Li and Wei-keng Liao and Alok Choudhary and Robert Ross and
+  Rajeev Thakur and William Gropp and Rob Latham and Andrew Siegel and Brad
+  Gallagher and Michael Zingale},
+  title = {Parallel {netCDF}: A High-Performance Scientific {I/O} Interface},
+  booktitle = {Proceedings of SC2003: High Performance Networking and
+  Computing},
+  series = {SC '03},
+  year = {2003},
+  month = {November},
+  address = {Phoenix, AZ},
+  publisher = {IEEE Computer Society Press},
+  isbn = {1-58113-695-1},
+  pages = {39--},
+  doi = {10.1145/1048935.1050189},
+  URL = {http://www.sc-conference.org/sc2003/paperpdfs/pap258.pdf},
+  keywords = {parallel I/O interface, netCDF, MPI-IO, pario-bib},
+  abstract = {Dataset storage, exchange, and access play a critical role in
+  scientific applications. For such purposes netCDF serves as a portable,
+  efficient file format and programming interface, which is popular in numerous
+  scientific application domains. However, the original interface does not
+  provide an efficient mechanism for parallel data storage and access. \par In
+  this work, we present a new parallel interface for writing and reading netCDF
+  datasets. This interface is derived with minimal changes from the serial
+  netCDF interface but defines semantics for parallel access and is tailored
+  for high performance. The underlying parallel I/O is achieved through MPI-IO,
+  allowing for substantial performance gains through the use of collective I/O
+  optimizations. We compare the implementation strategies and performance with
+  HDF5. Our tests indicate programming convenience and significant I/O
+  performance improvement with this parallel netCDF (PnetCDF) interface.},
+  comment = {published on the web only},
+}
 

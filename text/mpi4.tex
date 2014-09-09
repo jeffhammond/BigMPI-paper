@@ -5,7 +5,7 @@
 \subsubsection{Reductions}
 
 Whether or not one can apply a built-in reduce operation to a simple 
-(e.g. contiguous and homogeneous) user-defined datatype
+(e.g.\ contiguous and homogeneous) user-defined datatype
 is a fundamental inconsistency in the MPI standard, as accumulate
 functions permit this while reductions do not.
 % (1) 34+338 (+339?) required for sane reductions.
@@ -14,7 +14,7 @@ Tickets 34~\cite{ticket34} and 338~\cite{ticket338}
 propose to reconcile reductions and accumulate by generalizing
 reductions to include the features of accumulate (but not the converse).
 Both BigMPI and the popular numerical library PETSc wish to leverage 
-``accumulate-style behavior'' in reductions, i.e.  the built-in operations 
+``accumulate-style behavior'' in reductions, i.e.\  the built-in operations 
 can work on user-defined datatypes in an element-wise basis.
 
 Ticket 339~\cite{ticket339} % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/339
@@ -61,5 +61,5 @@ the addition of \texttt{MPI\_Type\_contiguous\_x} would make it almost trivial f
 realize large-count support in applications.
 Where we have proposed a set of new functions -- large-count v-collectives -- it is because
 the overhead of emulating this support on top of MPI-3 is $O(n_{proc})$ and the semantic mismatch is
-profound (e.g. large-count \texttt{MPI\_Scatterv} as \texttt{MPI\_Neighborhood\_alltoallw} is unnatural).
+profound (e.g.\ large-count \texttt{MPI\_Scatterv} as \texttt{MPI\_Neighborhood\_alltoallw} is unnatural).
 
