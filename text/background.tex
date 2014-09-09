@@ -23,7 +23,7 @@ If the user code manually packs data, either for
 performance~\cite{jenkins2012enabling} or encoding
 reasons~\cite{boostmpi}, then the MPI implementation may be given just
 an array of \texttt{MPI\_BYTE}, which further reduces the maximum
-message size (e.g. 250 million for \texttt{MPI\_DOUBLE}).
+message size (e.g. 250 million for C \texttt{double}).
 
 A natural workaround is to use MPI derived datatypes. While it is
 plausible that application developers will know typical data sizes and
@@ -53,9 +53,9 @@ to safeguard all communication functions which operate on user data.
 %#endif
 %\end{code}
 
-This project aspires to make it as easy as possible to support arbitrarily
-large counts ($2^{63}$ elements exceeds the local storage capacity of computers
-for the foreseeable future).
+%This project aspires to make it as easy as possible to support arbitrarily
+%large counts ($2^{63}$ elements exceeds the local storage capacity of computers
+%for the foreseeable future).
 
 % This text sucks
 
