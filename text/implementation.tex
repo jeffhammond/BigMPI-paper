@@ -6,8 +6,7 @@ As mentioned earlier, the MPI Forum contended that a ``count, type''
 tuple was sufficient to describe arbitrarily large types.  As of mid 2013, few codes
 required large count functionality, and those that did had devised workarounds.
 BigMPI and the re-emergence of a certain class of I/O routines finally served
-as the kick in
-the pants needed to audit the MPICH code.  To illustrate the challenges in
+as the motivation needed to audit the MPICH code.  To illustrate the challenges in
 making any MPI implementation ``large count'' clean, we describe the changes
 needed for the MPICH datatype processing engine and the ROMIO I/O library. We
 also share our experiences with an unfortunate OS limitation.

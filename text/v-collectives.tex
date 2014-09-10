@@ -13,7 +13,8 @@ Using \texttt{MPI\_Alltoallw} to implement, e.g., a large-count \texttt{MPI\_Sca
 particularly inefficient because the former assumes inputs from every process,
 whereas the latter only uses the input from the root.
 However, the overhead of scanning a vector of counts where all but one is zero
-is inconsequential compared to the cost of transmitting a buffer of $2^{31}$ bytes.
+is almost certainly inconsequential compared to the cost of transmitting a buffer 
+of $2^{31}$ bytes.
 %Additionally, such vectors are unlikely to be particularly long since scattering
 %a buffer that would run into large-count issues r
 
@@ -44,7 +45,7 @@ use \texttt{MPI\_Aint} for displacements.
 On the other hand, neighborhood collectives require an appropriate
 communicator, which must be constructed prior to calling \texttt{MPI\_Neighborhood\_alltoallw}.
 BigMPI creates a distributed graph communicator using \texttt{MPI\_Dist\_graph\_adjacent}
-on-the-fly for every invocation of the large-count v-collectives, which is assumed to be
+on-the-fly for every invocation of the large-count v-collectives, which instead assumed to be
 insignificant overhead compared to the data movement entailed in such an operation.
 
 Thus, the implementation of large-count v-collectives using \texttt{MPI\_Neighborhood\_alltoallw} 
@@ -85,7 +86,7 @@ the same traffic pattern as the point-to-point implementation.
 In this case, a MPI window must be created associated with the source (target)
 buffers and \texttt{MPI\_Get} (\texttt{MPI\_Put}) operations used for moving data.
 The most appropriate synchronization mode for mapping collectives to RMA
-is \texttt{MPI\_Win\_fence}, although one could use passive target as well.
+is \texttt{MPI\_Win\_fence}, although one could use passive target instead.
 In the event that a future version of the MPI standard introduces a nonblocking
 equivalent of \texttt{MPI\_Win\_fence} or \texttt{MPI\_Win\_unlock\_all}, these
 could be used to implement nonblocking v-collectives in terms of RMA; 
@@ -99,7 +100,9 @@ observed if RMA operations exploit RDMA hardware.
 While not named as such, \texttt{MPI\_Reduce\_scatter} is a v-collective.
 BigMPI currently does not yet support this function
 but it is straightforward to implement in terms of  \texttt{MPI\_Reduce} and
-\texttt{MPI\_Scatterv}. (\texttt{MPI\_Reduce\_scatter\_block} is supported, however)
+\texttt{MPI\_Scatterv}, which will be the basis for the BigMPI implementation
+when it exists.
+
 % V-collectives - nonblocking issues
 
 %None of the aforementioned solutions works for nonblocking because:
@@ -120,8 +123,8 @@ for the nonblocking v-collectives.
 Finally, all relevant forms of MPI RMA synchronization have blocking semantics
 and thus cannot be used to implement nonblocking collectives.
 
-We identify nonblocking v-collectives as the second example
-where MPI-3 lacks the necessary features to support large counts.
+\textit{We identify nonblocking v-collectives as the second example
+where MPI-3 lacks the necessary features to support large counts.}
 
 \begin{figure}
 \begin{code}

@@ -13,7 +13,8 @@ functions permit this while reductions do not.
 Tickets 34~\cite{ticket34} and 338~\cite{ticket338}
 % https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/338
 propose to reconcile reductions and accumulate by generalizing
-reductions to include the features of accumulate (but not the converse).
+reductions to include the features of accumulate
+(but not the converse, as that would entail support for active-messages via RMA).
 Both BigMPI and the popular numerical library PETSc wish to leverage 
 ``accumulate-style behavior'' in reductions, i.e.\  the built-in operations 
 can work on user-defined datatypes in an element-wise basis.

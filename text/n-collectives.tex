@@ -12,5 +12,5 @@ using the approach noted above for mapping v-collectives to \texttt{MPI\_Neighbo
 except that we omit the creation of the distributed graph communicator.
 All aforementioned issues with the nonblocking cases still exist, as temporary vectors
 are still required for the mapping of $(large\_count,type)$ to $(1,large\_type)$ for all ranks.
-Thus, we identify nonblocking neighborhood collectives as the third example
-where MPI-3 lacks the necessary features to support large counts.
+Thus, \textit{we identify nonblocking neighborhood collectives as the third example
+where MPI-3 lacks the necessary features to support large counts.}

@@ -34,7 +34,7 @@ MPI_User_function(void* invec, void* inoutvec,
                   int *len, MPI_Datatype *datatype);
 \end{code}
 As user-defined reduce operations are the only way to implement
-large-count nonblocking reductions, we identify this as the first example
-where MPI-3 lacks the necessary features to support large counts.
-Lack of support for \texttt{MPI\_IN\_PLACE} in user-defined reductions
-is a related shortcoming of the MPI-3 standard.
+large-count nonblocking reductions, \textit{we identify this as the first example
+where MPI-3 lacks the necessary features to support large counts effectively,
+as the inefficiency associated with user-defined reductions and lack of support
+for in-place reductions has a substantial negative impact on users.}

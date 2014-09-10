@@ -1,8 +1,8 @@
 \subsection{Performance optimizations}
 
-BigMPI is optimized for the common case when count is smaller than $2^{31}$
+BigMPI is optimized for the case when count is smaller than $2^{31}$
 with a \texttt{likely\_if} macro to minimize the performance hit for
-this more common use case.  The aim is for users to call the BigMPI routines
+the common case.  The aim is for users to call the BigMPI routines
 directly, instead of inserting a branch for the large-count case themselves.
 It is assumed that branch mis-prediction is significantly less expensive than
 transferring gigabytes of data across the network.
