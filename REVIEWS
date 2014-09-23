@@ -1,0 +1,55 @@
+Dear Jeff,
+
+We are pleased to inform you that your paper "To INT_MAX ... and beyond!" has been accepted for presentation at the
+ExaMPI14 workshop at SC14, to be held on November 17 2014 in New Orleans, LA.
+
+I will soon contact you for the preparation of the final version of the manuscript for the workshop
+proceedings and I will also provide you the agenda of the workshop.
+
+I am attaching the reviews of your manuscript to this email. Hopefully, they can help you in preparing the
+final version of the paper.
+
+Thank you very much for your submission and congratulations.
+
+Stefano Markidis
+on behalf of the ExaMPI14 PC
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 3
+TITLE: To INT_MAX ... and beyond!
+AUTHORS: Jeff Hammond, Andreas Schäfer and Robert Latham
+
+OVERALL EVALUATION: 3 (strong accept)
+REVIEWER'S CONFIDENCE: 3 (medium)
+
+----------- REVIEW -----------
+Well written, interesting and very much on-topic paper.
+
+Figure 2 is not referred to in the text
+
+Reference to "Figures III-B and III-B" should be to "Figures 3 and 4".
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 3
+TITLE: To INT_MAX ... and beyond!
+AUTHORS: Jeff Hammond, Andreas Schäfer and Robert Latham
+
+OVERALL EVALUATION: 2 (accept)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- REVIEW -----------
+The paper presents issues regarding to the support for large-count in MPI, identifies limitations of the current MPI-3 and proposes solutions implemented in BigMPI. Despite MPI provides means to large-count support via MPI derived data-types, applications that don't use MPI derived data type and in need of large count support would benefit by having a simple way to communicate large-count messages. The paper not only proposes a more natural/easier way of using large count messages with BigMPI but it also highlights issues in MPI-3 that need to be addressed for supporting large-count.
+
+The paper is very interesting and most of all is perfectly suited to the exascale MPI workshop. I believe that the results from BigMPI on CrayXC30 and IB clusters would be a very nice addition to the paper, but the paper in the current state is already complete. It would be nice to have references to applications that needs large-count support in MPI.
+
+Overall it is an interesting paper very well suited to the workshop. For these reasons, I recommend the paper for publication.
+
+Only few typos:
+
+- growing core counts per CPU mean -> means
+- only a count of only -> remove one "only"
+- straightforward to block -> maybe "break" instead of "block"?
+- Figures III-B and III-B  -> Figures 3 and 4 ; I haven't seen citation to Figure 2 but maybe it is there
+
