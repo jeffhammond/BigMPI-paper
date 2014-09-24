@@ -47,7 +47,7 @@ represents up to \texttt{SIZE\_MAX} elements.
 %a degree of flexibility not currently present in the MPI standard.
 This utility routine allows us to implement large-count support in a straightforward
 fashion since all instances of $(large\_count,type)$ are mapped to $(1,large\_type)$
-by this function.
+by this function.  In Figure~\ref{code:type_contig_x} we provide our implementation.
 An associated decoder function extracts the original $large\_count$ from a
 user-defined datatype; this function is employed within the user-defined reduction
 operations.  Decoding a datatype is nontrivial even for such a simple case --
@@ -94,10 +94,10 @@ int MPIX_Type_contiguous_x(MPI_Count count,
     return MPI_SUCCESS;
 }
 \end{code}
-\label{code:type_contig_x}
 \caption{Function for construction a large-count contiguous datatype.
 A vector type describes a series of adjacent chunks, and a struct type picks up
 any remaining data in case the count is not evenly divisible.}
+\label{code:type_contig_x}
 \end{figure}
 
 %In the general case, MPI\_Type\_create\_struct is required, although BigMPI tries to factorize the count into C integers so we can use MPI\_Type\_vector.

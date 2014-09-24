@@ -4,7 +4,7 @@
 \label{sec:reductions}
 
 Large-count support for reductions poses a challenge, particularly in the nonblocking case.
-For the blocking case, it is straightforward to block a single large-count operation into
+For the blocking case, it is straightforward to break a single large-count operation into
 multiple normal-count (count$<2^{31}$) operations (we will refer to this as chunking); 
 however, as it is not possible to return a single request object associated with more than 
 one nonblocking operation, we cannot implement nonblocking reductions in this manner.

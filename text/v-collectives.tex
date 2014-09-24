@@ -52,7 +52,7 @@ Thus, the implementation of large-count v-collectives using \texttt{MPI\_Neighbo
 requires two $O(n_{proc})$ setup steps: the first is to allocate and populate the vectors of 
 send and receive counts, displacements and datatypes and 
 the second is to create a distributed graph communicator.
-Figures~\ref{code:BigMPI_Create_graph_comm} and~\ref{code:BigMPI_Convert_vectors}
+Figures~\ref{code:BigMPI_Convert_vectors} and~\ref{code:BigMPI_Create_graph_comm}
 contain the implementation of these functions, which are included in their entirety to illustrate that,
 while the mapping from v-collectives to \texttt{MPI\_Neighborhood\_alltoallw} is feasible,
 is rather involved and in some cases quite unnatural.
@@ -181,9 +181,9 @@ void BigMPI_Convert_vectors(int num,
     return;
 }
 \end{code}
-\label{code:BigMPI_Convert_vectors}
 \caption{Function for populating the vector inputs 
 for \texttt{MPI\_Neighborhood\_alltoallw} for the various v-collectives.}
+\label{code:BigMPI_Convert_vectors}
 \end{figure}
 
 \begin{figure}
@@ -231,9 +231,9 @@ int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root,
     return rc;
 }
 \end{code}
-\label{code:BigMPI_Create_graph_comm}
 \caption{Function for constructing the distributed graph communicator
 that allows the mapping of both rooted (e.g. \texttt{MPI\_Gatherv}) and
 non-rooted (e.g. \texttt{MPI\_Allgatherv}) collectives to
 \texttt{MPI\_Neighborhood\_alltoallw}.}
+\label{code:BigMPI_Create_graph_comm}
 \end{figure}

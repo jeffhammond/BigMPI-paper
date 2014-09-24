@@ -26,9 +26,9 @@ REVIEWER'S CONFIDENCE: 3 (medium)
 ----------- REVIEW -----------
 Well written, interesting and very much on-topic paper.
 
-Figure 2 is not referred to in the text
+Figure 2 is not referred to in the text [FIXED]
 
-Reference to "Figures III-B and III-B" should be to "Figures 3 and 4".
+Reference to "Figures III-B and III-B" should be to "Figures 3 and 4". [FIXED]
 
 
 ----------------------- REVIEW 2 ---------------------
@@ -48,8 +48,8 @@ Overall it is an interesting paper very well suited to the workshop. For these r
 
 Only few typos:
 
-- growing core counts per CPU mean -> means
-- only a count of only -> remove one "only"
-- straightforward to block -> maybe "break" instead of "block"?
-- Figures III-B and III-B  -> Figures 3 and 4 ; I haven't seen citation to Figure 2 but maybe it is there
+- growing core counts per CPU mean -> means [Hm... will let Gail resolve that one]
+- only a count of only -> remove one "only" [FIXED]
+- straightforward to block -> maybe "break" instead of "block"? [FIXED]
+- Figures III-B and III-B  -> Figures 3 and 4 ; I haven't seen citation to Figure 2 but maybe it is there [FIXED]
 
