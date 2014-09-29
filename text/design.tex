@@ -51,7 +51,8 @@ fashion since all instances of $(large\_count,type)$ are mapped to $(1,large\_ty
 by this function.  Figure~\ref{code:type_contig_x} shows our implementation.
 An associated decoder function extracts the original $large\_count$ from a
 user-defined datatype; this function is employed within the user-defined reduction
-operations.  Decoding a datatype is nontrivial even for such a simple case---we
+operations.  Decoding a datatype ``by hand'' (using MPI routines directly)
+is nontrivial even for such a simple case---we
 must call \texttt{MPI\_Type\_get\_envelope} and \texttt{MPI\_Type\_get\_contents}
 three times each just to unwind the result of \texttt{MPIX\_Type\_contiguous\_x}.
 %GWP - do you mean, By hiding these details, BigMPI is a ...? the way you had it, it sounded sounds like MPI does so.
