@@ -4,15 +4,16 @@
 \label{sec:design}
 
 In this section, we describe the mapping from large-count variants
-of MPI-like communication functions to MPI-3 functions, which usually
-involves the creation of a large-count datatype, but possibly much more.
+of MPI-like communication functions to MPI-3 functions.
+This task usually
+involves creating a large-count datatype, but possibly much more.
 BigMPI implements all variants of send and receive, blocking and nonblocking variants of
 the homogeneous collectives (bcast, gather, scatter, allgather, alltoall)
 and RMA (put, get, accumulate, get\_accumulate)
 along the lines of the example for MPI\_Send, shown in Figure~\ref{code:mpi_send_x}.
 This class of routines provides the most commonly used MPI functionality, 
 so for many codes the Forum has been proven correct.  
-However, as we will see in Section~\ref{sec:reductions},
+As we will see in Section~\ref{sec:reductions}, however,
 not all parts of the MPI standard were so straightforward.
 
 \begin{figure}
@@ -34,11 +35,11 @@ int MPIX_Send_x(const void *buf, MPI_Count count,
     return rc;
 }
 \end{code}
-\caption{The implementation of large-count Send, which serves as a template
+\caption{Implementation of large-count Send, which serves as a template
 for many other MPI-3 routines.\label{code:mpi_send_x}}
 \end{figure}
 
-The critical function in all of the large-count implementations noted above
+The critical function in all the large-count implementations noted above
 is \texttt{MPIX\_Type\_contiguous\_x}, which emits a single datatype that
 represents up to \texttt{SIZE\_MAX} elements.
 %Supporting more elements than can fit into $2^{63}$ bytes of memory is
@@ -47,22 +48,25 @@ represents up to \texttt{SIZE\_MAX} elements.
 %a degree of flexibility not currently present in the MPI standard.
 This utility routine allows us to implement large-count support in a straightforward
 fashion since all instances of $(large\_count,type)$ are mapped to $(1,large\_type)$
-by this function.  In Figure~\ref{code:type_contig_x} we provide our implementation.
+by this function.  Figure~\ref{code:type_contig_x} shows our implementation.
 An associated decoder function extracts the original $large\_count$ from a
 user-defined datatype; this function is employed within the user-defined reduction
-operations.  Decoding a datatype is nontrivial even for such a simple case --
-we must call \texttt{MPI\_Type\_get\_envelope} and \texttt{MPI\_Type\_get\_contents}
+operations.  Decoding a datatype is nontrivial even for such a simple case---we
+must call \texttt{MPI\_Type\_get\_envelope} and \texttt{MPI\_Type\_get\_contents}
 three times each just to unwind the result of \texttt{MPIX\_Type\_contiguous\_x}.
-BigMPI is boon to the majority of application programmers that are unfamiliar 
-with such features in the MPI standard by virtue of hiding these details.
+%GWP - do you mean, By hiding these details, BigMPI is a ...? the way you had it, it sounded sounds like MPI does so.
+By hiding these details,
+BigMPI is a boon to application programmers, the majority of whom are unfamiliar 
+with such features in the MPI standard.
+%by virtue of hiding these details.
 
 Other datatypes can be supported easily within BigMPI, but this is not a high
 priority because the primary goal is to solve the large-count problem for users
-that are not currently making use of derived datatypes.
-A user that employs derived datatypes in their code already is likely capable
-of implementing their own large-count support already.
+who are not currently making use of derived datatypes.
+Users who employ derived datatypes in their code already are likely to be able
+to implement their own large-count support. 
 Nonetheless, the release version of BigMPI will support large-count equivalents
-of all of the existing datatype constructors.
+of all the existing datatype constructors.
 
 % split MPI_TYPE_CREATE_STRUCT below on two lines to fix an overfull warning
 \begin{figure}

@@ -7,7 +7,7 @@ mapping of large-count BigMPI functions to MPI-3 ones,
 which was described in \S\ref{sec:design}.
 However, it is worthwhile to measure the overhead associated
 with layering BigMPI on top of MPI-3, particularly for v-collectives.
-Additionally, as user-defined reductions are not amenable to numerous
+Additionally, since user-defined reductions are not amenable to numerous
 optimizations normally found in high-performance MPI implementations,
 that may lead to significant performance degradation in some cases.
 The final version of this paper will evaluate these two issues
@@ -15,7 +15,7 @@ using two modern HPC architectures: Cray XC30 and InfiniBand clusters.
 In order to make an apples-to-applies comparison, a count
 of $2^{30}$ will be used.  This is sufficiently large that the data transfer
 cost should be dominant if the overheads are to be considered irrelevant.
-Similarly, this is sufficiently large as to observe a substantial difference 
+Similarly, this is sufficiently large that one can observe a substantial difference 
 between an optimized reduction and the user-defined one, should a
 difference exist.
 For debugging purposes, BigMPI allows the user to specify any

@@ -5,35 +5,34 @@
 The MPI standard provides a wide range of communication functions that
 take a C \texttt{int} argument for the element count, thereby limiting this
 value to \texttt{INT\_MAX} or less.
-This means that one cannot send, e.g. 3 billion bytes using the \texttt{MPI\_BYTE} 
-datatype, or a vector of 5 billion integers using the \texttt{MPI\_INT} type, as
-two examples.
+Hence, one cannot send, for example. 3 billion bytes using the \texttt{MPI\_BYTE} 
+datatype or a vector of 5 billion integers using the \texttt{MPI\_INT} type. 
 
-These limitations may seem academic in nature, as 2 billion
-\texttt{MPI\_DOUBLE} equate to 16GB and one might think that
-applications may rarely ever need to transmit that much data, as there
+These limitations may seem academic: 2 billion
+\texttt{MPI\_DOUBLE} equate to 16 GB, and one might think that
+applications may rarely need to transmit that much data, since there
 may be less memory available for the whole address space in which the MPI
 process is running.
-Two recent trends may render this limit increasingly impractical: 
+Two recent trends may render this limit increasingly impractical, however: 
 first, growing core counts per CPU mean larger data portions per MPI 
-process and second, Big Data applications may demand more memory 
-per core than the traditional 2GB for computer simulations.
+process, and second, Big Data applications may demand more memory 
+per core than the traditional 2 GB for computer simulations.
 
 If the user code manually packs data, either for
-performance~\cite{jenkins2012enabling} or encoding
+performance~\cite{jenkins2012enabling} or for encoding
 reasons~(\cite{boostmpi} \cite{li:PnetCDF},
  then the MPI implementation may be given just
-an array of \texttt{MPI\_BYTE}, which further reduces the maximum
-message size (e.g. 250 million for C \texttt{double}).
+an array of \texttt{MPI\_BYTE}s, which further reduces the maximum
+message size (e.g., 250 million for C \texttt{double}).
 
-A natural workaround is to use MPI derived datatypes. While it is
-plausible that application developers will know typical data sizes and
-can thus intercept calls which may exceed the \texttt{INT\_MAX} limit,
+A natural workaround is to use MPI derived datatypes. While 
+application developers are likely to know typical data sizes and
+can thus intercept calls that may exceed the \texttt{INT\_MAX} limit,
 another scenario is harder to solve: problem solving
 environments~\cite{cactus:SC01, gromacs} and computational
 libraries~\cite{physis, libgeodecomp} operate on data structures with
 user-defined dimensions. To ensure correctness, developers would need
-to safeguard all communication functions which operate on user data.
+to safeguard all communication functions that operate on user data.
 
 %As we will demonstrate in the following sections, this is not a
 %trivial task for all communication operations. A generic, reusable
@@ -65,17 +64,17 @@ to safeguard all communication functions which operate on user data.
 % interfaces to represent the number of data elements to be communicated;
 % in some cases, this type is also used to express an offset (more on this later).  
 
-This paper focuses on the issues with the C interface and we use the
+This paper focuses on the issues with the C interface, and we use the
 well-known convention I$n_{I}$L$n_{L}$P$n_{P}$ to refer to the sizes
 of the C types \texttt{int}, \texttt{long}, and \texttt{void*}, respectively.
-For ILP32 systems, the largest buffer one can allocate is $2^{32}$ bytes (4GiB),
-while MPI can handle buffers of up to 2GiB; the factor of two difference is
-almost never a problem since 4GiB of \texttt{int} for example requires
+For ILP32 systems, the largest buffer one can allocate is $2^{32}$ bytes (4 GiB),
+while MPI can handle buffers of up to 2 GiB; the factor of 2 difference is
+almost never a problem since 4 GiB of \texttt{int}, for example, requires
 a count of only $2^{30}$.
- A problem emerges in IL32P64 and I32LP64 systems because it is possible to allocate
+ A problem emerges in IL32P64 and I32LP64 systems because one can allocate
  more memory in a buffer than can be captured with an integer count and built-in datatype.
  For example, a vector of 3 billion floats requires 12 GB of memory but cannot be 
- communicated using any communication routine using built-in datatypes.
+ communicated with any communication routine using built-in datatypes.
 
 % previously in background
 %The MPI Forum resolved the large-count issue by deciding the standard already

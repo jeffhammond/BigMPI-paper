@@ -5,12 +5,12 @@
 
 The Message Passing Interface~\cite{mpiforum:94, mpiforum:96, mpiforum:09, mpiforum:12} 
 defines a broad set of functionality for writing parallel programs, especially across
-distributed computing systems.
+distributed-computing systems.
 Now more than 20 years old, MPI continues to be widely used and has met the challenges of
-post-petascale computing, including scaling out to millions of cores~\cite{balaji2011mpi}. 
-In order to scale up, in terms of problem size, one needs
+post-petascale computing, including scaling to millions of cores~\cite{balaji2011mpi}. 
+In order to scale up in terms of problem size, one needs
 to be able to describe large working sets.  The existing (count, datatype) pair
-works well, until the ``count'' exceeds the range of the native integer type
+works well until the ``count'' exceeds the range of the native integer type
 (in the case of the C interface, \texttt{int}, which is 32 bits on most current platforms).
 We call this the ``large-count'' problem.
 
@@ -18,20 +18,20 @@ When drafting MPI-3 the MPI Forum took a minimalist approach large-count
 support~\cite{ticket265}.
 The forum introduced a handful of MPI\_Foo\_x routines that provide a large-count
 equivalent of an existing MPI\_Foo to make rudimentary large-count support possible.
-To be explicit, in this context, Foo is ``Get\_elements'', ``Type\_size'', ``Type\_get\_extent'', 
-``Type\_get\_true\_extent'', ``Status\_set\_elements'', which is the minimal set
-of functions that must support large counts in order for one to be able to deal 
+To be explicit, in this context, Foo is ``Get\_elements,'' ``Type\_size,'' ``Type\_get\_extent,'' 
+``Type\_get\_true\_extent,'' and ``Status\_set\_elements,'' which is the minimal set
+of functions that must support large counts in order to be able to deal 
 with derived datatypes that represent large counts.
-After lengthy deliberation, the Forum asserted that ``just use datatypes'' is 
+After lengthy deliberation, the forum asserted that ``just use datatypes'' is 
 a sufficient solution for users~\cite{squyres-blog-large-count}.
 For example, one can describe 4 billion bytes as 1 billion 4-byte integers.
 Or, one could use contiguous MPI dataypes to describe 16 billion bytes as 1,000
-16 million-byte chunks.  For these simple examples, it is easy to envision a
-solution. It is only through implementing the proposed approach for all cases
-in MPI that one discovers the challenges hidden in such an assertion.
+16 million-byte chunks.  For these simple examples, one can easily envision a
+solution. Only through implementing the proposed approach for all cases
+in MPI does one discover the challenges hidden in such an assertion.
 
 BigMPI provides a high-level library that attempts to support large counts.
-It was written to test the Forum's assertion
+It was written to test the forum's assertion
 that datatypes are sufficient for large-count support and to provide a drop-in library
 solution for applications requiring large-count support.
 In this context, ``large-count'' is any count that exceeds \texttt{INT\_MAX}.
@@ -41,13 +41,13 @@ enable large counts, minimizing application changes.
 BigMPI is designed for the common case where one has a 64-bit address
 space and is unable to do MPI communication on more than $2^{31}$ elements
 despite having sufficient memory to allocate such buffers.
-%BigMPI does not attempt to support large-counts on systems where
+%BigMPI does not attempt to support large counts on systems where
 %C \texttt{int} and \texttt{void\*} are both 32 bits.
-As systems with more than $2^{63}$ bytes (8192 PiB) of memory 
-per node are unlikely to exist for the foreseeable future --
-the total system memory capacity for an exascale machine has been 
-predicted to be 50-100 petabytes~\cite{shalf2011exascale} --
-BigMPI makes no attempt to support the full range of \texttt{MPI\_Count}
+Since systems with more than $2^{63}$ bytes (8192 PiB) of memory 
+per node are unlikely to exist for the foreseeable future---the
+ total system memory capacity for an exascale machine has been 
+predicted to be 50--100 petabytes~\cite{shalf2011exascale}---BigMPI
+makes no attempt to support the full range of \texttt{MPI\_Count}
 (possibly a 128-bit integer) internally; rather it uses \texttt{size\_t}
-and \texttt{MPI\_Aint}, as these reflect the limit of the available memory
+and \texttt{MPI\_Aint}, because these reflect the limit of the available memory
 rather than the theoretical filesystem size (as \texttt{MPI\_Count} does).

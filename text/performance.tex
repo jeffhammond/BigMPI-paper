@@ -1,21 +1,21 @@
 \subsection{Performance optimizations}
 
-BigMPI is optimized for the case when count is smaller than $2^{31}$
+BigMPI is optimized for the case when the count is smaller than $2^{31}$,
 with a \texttt{likely\_if} macro to minimize the performance hit for
 the common case.  The aim is for users to call the BigMPI routines
 directly, instead of inserting a branch for the large-count case themselves.
-It is assumed that branch mis-prediction is significantly less expensive than
+We assume that branch misprediction is significantly less expensive than
 transferring gigabytes of data across the network.
 
-While software overhead is expected to be insignificant compared to data movement
-in BigMPI, it is possible to reduce the overhead of \texttt{MPIX\_Type\_contiguous\_x}
-by implementing it using the internal functions of the MPI implementation,
-which we have prototype within MPICH already 
+While software overhead is expected to be insignificant compared with data movement
+in BigMPI, one can reduce the overhead of \texttt{MPIX\_Type\_contiguous\_x}
+by implementing it using the internal functions of the MPI implementation.
+We have prototyped these within MPICH already 
 (\href{https://github.com/jeffhammond/mpich/tree/type_contiguous_x}
 {https://github.com/jeffhammond/mpich/tree/type\_contiguous\_x})
-and begun prototyping within Open MPI.
+and have begun prototyping within Open MPI.
 
-Additional optimizations included caching graph communicators or windows associated
+Additional optimizations include caching graph communicators or windows associated
 with v-collectives and searching count vectors for repetition to reduce the number of 
 user-defined datatypes required.
 The former optimization was previously implemented
@@ -27,7 +27,7 @@ In general, the goal of BigMPI is to provide a straightforward implementation of
 large-count support using a friendly library interface.
 The best way to develop an optimized implementation of large-count support
 is within an MPI implementation, whether that be through new functions in MPI-4
-or non-standard extensions to MPI provided by a particular implementation.
+or nonstandard extensions to MPI provided by a particular implementation.
 For example, it would be straightforward, albeit a substantial amount of work,
 to implement the large-count operations of the BigMPI interface within MPICH.
 

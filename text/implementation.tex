@@ -2,32 +2,35 @@
 
 \section{Making MPI Implementations Large-count Clean}
 % MPICH dataloop code
-As mentioned earlier, the MPI Forum contended that a ``count, type''
-tuple was sufficient to describe arbitrarily large types.  As of mid 2013, few codes
+The MPI Forum contended that a ``count, type''
+tuple was sufficient to describe arbitrarily large types.  As of mid-2013, few codes
 required large count functionality, and those that did had devised workarounds.
 BigMPI and the re-emergence of a certain class of I/O routines finally served
 as the motivation needed to audit the MPICH code.  To illustrate the challenges in
 making any MPI implementation ``large count'' clean, we describe the changes
 needed for the MPICH datatype processing engine and the ROMIO I/O library. We
-also share our experiences with an unfortunate OS limitation.
+also share our experiences with an unfortunate operating system limitation.
 
 
-\subsection{MPICH Datatloop code}
+\subsection{MPICH datatloop code}
 The MPICH code base prior to the
 3.1 release contained widespread assumptions that an int-sized type
 would be sufficient to contain not only the size of a datatype but also the product
 of a count of the number of datatypes and the size of those types.
 Even before MPI-3, this assumption was false: the size of a million MPI\_DOUBLE
 types exceeds 32 bits.
-An obvious first step would be to promote `int' to `MPI\_Count' wherever it was
+An obvious first step would be to promote ``int'' to ``MPI\_Count'' wherever it was
 used to hold a size.
-Out of concern for possibly conducting 128-bit math on a 64 bit platform (a
-rather poorly performing situation on the LP64 machines common in 2014),
+Concerned about possibly conducting 128-bit math on a 64-bit platform (a
+poorly performing situation on the LP64 machines common in 2014),
 we instead used MPI\_Aint.  The MPI\_Aint type, large enough to hold a
 count of bytes for a memory allocation, will be sufficient to describe the file
-and memory use cases we envision.  To find all the locations in 8600 lines of
-code requiring promotion, the Clang compiler warning flag
-\texttt{-Wshorten-64-to-32} proved invaluable for this task.  The compiler option has
+and memory use cases we envision.
+The Clang compiler warning flag
+\texttt{-Wshorten-64-to-32} proved invaluable for finding
+all the locations in 8,600 lines of
+code requiring promotion.
+The compiler option has
 flagged many more
 locations in the MPICH code that remain in need of examination.
 
@@ -35,22 +38,22 @@ locations in the MPICH code that remain in need of examination.
 \subsection{ROMIO type processing}
 \label{sec:romio_typeproc}
 
-Once we made it possible for MPICH to describe arbitrarily large datatypes, we
+Once we enabled MPICH to describe arbitrarily large datatypes, we
 needed to update the ROMIO layer to understand these new larger datatypes.
 ROMIO \cite{thakur:mpi-io-implement} was designed to be a portable
  implementation of MPI-2's I/O
 chapter.  While in modern practice it is almost always part of an MPI
-implementation, it is possible to build a stand-alone ROMIO library.  Thus,
+implementation, one can build a stand-alone ROMIO library.  Thus,
 ROMIO strives to use only MPI library routines to process datatypes, and not reach into the internal datatype processing engine of the underlying MPI implementation.
 
 The MPI-3 standard provides the large-count aware \_x variants of
-MPI\_Type\_get\_size, but
+MPI\_Type\_get\_size; but
 ROMIO, like the MPICH dataloop code, used int types for the count.
 Here again,  we had to audit ROMIO for instances of storing $count * size$
 into an integer, an operation that would result in the compiler truncating the
 result upon assignment.
 
-Even some surprising regions of ROMIO needed updating. For one example, the
+Even some other regions of ROMIO unexpectedly needed updating. For one example, the
 two-phase collective buffering optimization will split up even large requests
 into ``cb\_buffer\_size'' chunks.  However, there is still a preliminary step
 where ROMIO exchanges offset-length pairs among coordinating processes.  ROMIO
@@ -62,7 +65,7 @@ HINDEXED datatype constructor that used an MPI\_Count type for its length array.
 % UNIX system calls
 \subsection{UNIX system calls}
 
-Finally, after updating MPICH and ROMIO to accommodate large data transfers,
+After updating MPICH and ROMIO to accommodate large data transfers,
 we are left with one last problem: the system call layer.
 The write system call has the following prototype:
 
@@ -70,15 +73,15 @@ The write system call has the following prototype:
 ssize_t write(int fd, const void *buf, size_t count);
 \end{code}
 
+\noindent
 where size\_t is supposed to be big enough to hold ``the size of an object''
 \cite{posix-std}.  However, we must remember that the rule for write is that it may
-write ``up to count bytes''.  In practice, short writes to a file are not seen --
-until the count of bytes approaches $2^{31}$.  On Linux, we observed 
+write ``up to count bytes.''  In practice, short writes to a file are not seen---until the count of bytes approaches $2^{31}$.  On Linux, we observed 
 the write system call outputting at most 
-$2^{31}-4096$ bytes no matter how many bytes were requested,
+$2^{31}-4,096$ bytes no matter how many bytes were requested,
 necessitating the introduction of retry
 logic.  On Darwin and BSD, the story is even worse: if $2^{31}$ bytes are passed
 down to the read or write system call, the call will return an error.  We now
 cap the size of a transfer to INT\_MAX and issue multiple system calls until
-all bytes have been transfered.  The lesson for implementors is clear:
-operating on large amounts of data has seen very little test coverage throughout the software stack.
+all bytes have been transferred.  The lesson for implementors is clear:
+Operating on large amounts of data has seen little test coverage throughout the software stack.
