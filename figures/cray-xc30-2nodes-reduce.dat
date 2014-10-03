@@ -1,0 +1,21 @@
+jhammond@nid02819:/global/u1/j/jhammond/BigMPI/test/perf> for m in {1..20} ; do aprun -n 48 ./reductions $((m*1024*1024)) ; done
+n = 1048576 tmpi = 0.039547 dtusr = 0.050496
+n = 2097152 tmpi = 0.080847 dtusr = 0.104418
+n = 3145728 tmpi = 0.121953 dtusr = 0.159819
+n = 4194304 tmpi = 0.179710 dtusr = 0.236265
+n = 5242880 tmpi = 0.233241 dtusr = 0.297245
+n = 6291456 tmpi = 0.264408 dtusr = 0.346786
+n = 7340032 tmpi = 0.309356 dtusr = 0.400960
+n = 8388608 tmpi = 0.362026 dtusr = 0.479515
+n = 9437184 tmpi = 0.401499 dtusr = 0.529693
+n = 10485760 tmpi = 0.441012 dtusr = 0.579226
+n = 11534336 tmpi = 0.501890 dtusr = 0.654949
+n = 12582912 tmpi = 0.538954 dtusr = 0.699284
+n = 13631488 tmpi = 0.581605 dtusr = 0.773531
+n = 14680064 tmpi = 0.620409 dtusr = 0.821854
+n = 15728640 tmpi = 0.678993 dtusr = 0.897130
+n = 16777216 tmpi = 0.723136 dtusr = 0.957849
+n = 17825792 tmpi = 0.767119 dtusr = 1.000652
+n = 18874368 tmpi = 0.805006 dtusr = 1.047435
+n = 19922944 tmpi = 0.852346 dtusr = 1.114785
+n = 20971520 tmpi = 0.911717 dtusr = 1.199845
