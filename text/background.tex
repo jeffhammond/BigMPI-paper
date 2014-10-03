@@ -14,9 +14,11 @@ applications may rarely need to transmit that much data, since there
 may be less memory available for the whole address space in which the MPI
 process is running.
 Two recent trends may render this limit increasingly impractical, however: 
-first, growing core counts per CPU mean larger data portions per MPI 
-process, and second, Big Data applications may demand more memory 
-per core than the traditional 2 GB for computer simulations.
+first, growing compute power per node implies increased data per MPI
+process within a weak-scaling context, and second, 
+Big Data applications may require more memory 
+per process than traditional simulation codes that solve the 
+equations-of-motion for a particular domain of physical science.
 
 If the user code manually packs data, either for
 performance~\cite{jenkins2012enabling} or for encoding

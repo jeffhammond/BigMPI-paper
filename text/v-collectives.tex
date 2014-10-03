@@ -47,8 +47,11 @@ communicator, which must be constructed prior to calling \texttt{MPI\_Neighborho
 BigMPI creates a distributed graph communicator using \texttt{MPI\_Dist\_graph\_adjacent}
 on the fly for every invocation of the large-count v-collectives, which instead are assumed to incur
 insignificant overhead compared with the data movement entailed in such an operation.
+It is straightforward to optimize for the common cases of \texttt{MPI\_COMM\_WORLD} for
+non-rooted collectives and \texttt{MPI\_COMM\_WORLD} with \texttt{root=0}, but this 
+is not currently implemented.
 
-Thus, the implementation of large-count v-collectives using \texttt{MPI\_Neighborhood\_alltoallw} 
+The implementation of large-count v-collectives using \texttt{MPI\_Neighborhood\_alltoallw} 
 requires two $O(n_{proc})$ setup steps. The first allocates and populates the vectors of 
 send and receive counts, displacements, and datatypes. 
 The second creates a distributed graph communicator.

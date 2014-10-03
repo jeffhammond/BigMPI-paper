@@ -3,7 +3,7 @@
 \begin{abstract}
 In order to describe a structured region of memory, the routines in the MPI standard use
 a (count, datatype) pair.  The C specification for this convention uses an
-\texttt{int} type.  Since C \texttt{int} types are nearly always 32 bits
+\texttt{int} type for the count.  Since C \texttt{int} types are nearly always 32 bits
 large and signed,
 counting more than $2^{31}$ elements poses a challenge.
 Instead of changing the existing MPI routines, and all consumers of those
