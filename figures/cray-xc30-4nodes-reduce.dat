@@ -1,0 +1,43 @@
+jhammond@nid02435:/global/u1/j/jhammond/BigMPI/test/perf> for m in {1..20} ; do aprun -n 96 ./reductions $((m*1024*1024)) ; done
+n = 1048576 tmpi = 0.039954 dtusr = 0.052555
+n = 2097152 tmpi = 0.082880 dtusr = 0.111766
+n = 3145728 tmpi = 0.127614 dtusr = 0.167073
+n = 4194304 tmpi = 0.183482 dtusr = 0.253530
+n = 5242880 tmpi = 0.231693 dtusr = 0.313053
+n = 6291456 tmpi = 0.278902 dtusr = 0.376197
+n = 7340032 tmpi = 0.320340 dtusr = 0.442028
+n = 8388608 tmpi = 0.373823 dtusr = 0.502528
+n = 9437184 tmpi = 0.414709 dtusr = 0.560986
+n = 10485760 tmpi = 0.466440 dtusr = 0.635234
+n = 11534336 tmpi = 0.508684 dtusr = 0.688735
+n = 12582912 tmpi = 0.558853 dtusr = 0.755759
+n = 13631488 tmpi = 0.600152 dtusr = 0.814821
+n = 14680064 tmpi = 0.651999 dtusr = 0.888123
+n = 15728640 tmpi = 0.697529 dtusr = 0.940024
+n = 16777216 tmpi = 0.740735 dtusr = 1.001973
+n = 17825792 tmpi = 0.788219 dtusr = 1.058171
+n = 18874368 tmpi = 0.842275 dtusr = 1.121341
+n = 19922944 tmpi = 0.882995 dtusr = 1.187093
+n = 20971520 tmpi = 0.928149 dtusr = 1.261483
+
+mmond@nid02435:/global/u1/j/jhammond/BigMPI/test/perf> for m in {1..20} ; do aprun -n 4 -N 1 ./reductions $((m*1024*1024)) ; done
+n = 1048576 tmpi = 0.003788 dtusr = 0.005619
+n = 2097152 tmpi = 0.008051 dtusr = 0.012995
+n = 3145728 tmpi = 0.016583 dtusr = 0.021186
+n = 4194304 tmpi = 0.028156 dtusr = 0.047389
+n = 5242880 tmpi = 0.038065 dtusr = 0.058204
+n = 6291456 tmpi = 0.041413 dtusr = 0.070845
+n = 7340032 tmpi = 0.049165 dtusr = 0.078779
+n = 8388608 tmpi = 0.058478 dtusr = 0.092555
+n = 9437184 tmpi = 0.063539 dtusr = 0.101653
+n = 10485760 tmpi = 0.068771 dtusr = 0.111159
+n = 11534336 tmpi = 0.073287 dtusr = 0.123534
+n = 12582912 tmpi = 0.079914 dtusr = 0.135980
+n = 13631488 tmpi = 0.094775 dtusr = 0.145074
+n = 14680064 tmpi = 0.097926 dtusr = 0.161783
+n = 15728640 tmpi = 0.094556 dtusr = 0.166636
+n = 16777216 tmpi = 0.110592 dtusr = 0.180404
+n = 17825792 tmpi = 0.123639 dtusr = 0.188346
+n = 18874368 tmpi = 0.123997 dtusr = 0.184597
+n = 19922944 tmpi = 0.133148 dtusr = 0.211595
+n = 20971520 tmpi = 0.143940 dtusr = 0.221961
