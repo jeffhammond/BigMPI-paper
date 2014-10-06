@@ -10,14 +10,45 @@ with layering BigMPI on top of MPI-3, particularly for v-collectives.
 Additionally, since user-defined reductions are not amenable to numerous
 optimizations normally found in high-performance MPI implementations,
 that may lead to significant performance degradation in some cases.
-The final version of this paper will evaluate these two issues
-using two modern HPC architectures: Cray XC30 and InfiniBand clusters.
-In order to make an apples-to-applies comparison, a count
-of $2^{30}$ will be used.  This is sufficiently large that the data transfer
-cost should be dominant if the overheads are to be considered irrelevant.
-Similarly, this is sufficiently large that one can observe a substantial difference 
-between an optimized reduction and the user-defined one, should a
-difference exist.
-For debugging purposes, BigMPI allows the user to specify any
-large-count cutoff, not just \texttt{INT\_MAX}, so these experiments
-require no development.
+
+%The final version of this paper will evaluate these two issues
+%using two modern HPC architectures: Cray XC30 and InfiniBand clusters.
+%In order to make an apples-to-applies comparison, a count
+%of $2^{30}$ will be used.
+%This is sufficiently large that the data transfer
+%cost should be dominant if the overheads are to be considered irrelevant.
+%Similarly, this is sufficiently large that one can observe a substantial difference 
+%between an optimized reduction and the user-defined one, should a
+%difference exist.
+%For debugging purposes, BigMPI allows the user to specify any
+%large-count cutoff, not just \texttt{INT\_MAX}, so these experiments
+%require no development.
+
+We measured the overhead of user-defined reductions for the case
+of \texttt{MPI\_SUM} and \texttt{MPI\_DOUBLE} on the NERSC Edison
+(Cray${}^\circledR$ XC30) by directly comparing \texttt{MPI\_Allreduce}
+with the built-in operations to an implementation of these using a user-defined
+reduction in a manner identical to BigMPI (henceforth referred to as User).
+The ratio of time for User vs. MPI for messages ranging from 1 to 20 MiB
+was $\sim1.3$ (it is relatively constant across buffer sizes and thus we
+report only the average value) for two nodes fully populated with
+24 processes per node (ppn).  This ratio increased to $\sim1.35$ and $\sim1.39$
+for four and eight fully-populated nodes, respectively.  For one ppn, the relative
+performance is larger: $\sim1.59$ and $1.84$ for four and eight nodes, respectively.
+Larger tests, both in buffer size and node count, were deemed unnecessary to further
+prove the point that an HPC-oriented MPI implementation like Cray MPI delivers
+superior performance for the built-in case.
+In cases like IBM${}^\circledR$ Blue Gene/Q, which has specialized hardware
+for reductions, we would expect this difference to be much greater.
+
+The performance of \texttt{MPIX\_Type\_contiguous\_x} was measured
+in a simple micro benchmark corresponding to the types are arguments
+expected in BigMPI.
+The average time-per-call for this function on a Mac Air laptop with an 
+Intel${}^\circledR$~Core\texttrademark~i7 processor was less than
+3 microseconds for MPICH 3.1.2 built with GCC 4.9.
+This timing is on the order of the latency of a single packet message
+on a modern HPC network and is thus negligible when moving gigabytes
+of data, even if one datatype must be created for every process 
+in a communicator, as is the case for vector-argument collectives.
+
